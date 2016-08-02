@@ -1,0 +1,13 @@
+# depslib dependency file v1.0
+1470120791 source:/home/johnny/Desktop/git1/fyp/keywordElector/main.cpp
+	<fstream>
+	<sstream>
+	<vector>
+	"custClass.h"
+	<algorithm>
+	<math.h>
+
+1470115340 /home/johnny/Desktop/git1/fyp/keywordElector/custClass.h
+	<string>
+	<iostream>
+

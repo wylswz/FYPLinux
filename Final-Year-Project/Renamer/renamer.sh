@@ -1,6 +1,7 @@
 #!/bin/bash
 #this program can be used to formulate the file names, so that they can be processed easily
 PATH = /bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin
+<<<<<<< 1441d55ef0d8b5e242e34427404d9d5041159095
 rm -rf temp
 mkdir temp
 i=0
@@ -10,6 +11,31 @@ cp "${var1}" temp/"${i}"
 done
 
 
+=======
+
+test -e temp || mkdir temp
+
+var1=`ls *.txt`
+i=0
+tempCounter=0  ##this indicates how many files are already in the temp folder
+cd temp  ##enter temp
+lsTemp=`ls`
+for element in $lsTemp
+do
+tempCounter=`expr $tempCounter + 1`
+done
+cd ..  ##exit temp after counting the number of files
+
+
+for element in $var1
+do
+  i=`expr $i + 1`
+  echo "$i $element \n"
+  cp `echo $element` temp/`expr $i + $tempCounter`
+done
+                  ##end of first part: rename all the txt files with number.
+
+>>>>>>> asd
 cd temp
 var2=`ls`
 iterTemp=0
@@ -22,6 +48,10 @@ done
                   ##end of second part: split the atricles so that each word will occupy a single line
 cd ..
 cd ..
+<<<<<<< 1441d55ef0d8b5e242e34427404d9d5041159095
 rm -rf text
 cp -r Renamer/temp text
+=======
+cp -r Renamer/temp temp
+>>>>>>> asd
 exit 0

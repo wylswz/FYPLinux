@@ -57,14 +57,14 @@ double TF_IDF_CAL(char *s,  int numOfDoc)  //calculate the TF_IDF value for stri
 
 
 
-   return TF_IDF;
+   return -TF_IDF;
 }
 
 
 
 int main()
 {
-    word bufferWord;
+
     string content;
     string test="asd";
     string fileName;
@@ -99,8 +99,6 @@ int main()
        textReader1.open(&fileName[0],ios::in);
        while (textReader1>>content)
     {
-
-          cout << progress << endl;
           progress += 1;
           it = find(checked.begin(),checked.end(),content);
           if (it == checked.end())   //the word cannot be found in the checked list
@@ -108,7 +106,18 @@ int main()
             tf_idf = TF_IDF_CAL(&content[0],numOfDoc);
       //    cout<<tf_idf<<endl;
       //    cout<<"aaa"<<endl;;
-            checked.push_back(content);
+            if (tf_idf <= 25)
+            {
+              word* bufferWord = new word();
+              checked.push_back(content);   //add this word to the checked list
+              bufferWord->ANO = docCounter;
+              bufferWord->content = content;
+              bufferWord->setTF_IDF(tf_idf);
+              wordSet.push_back(*bufferWord);
+              bufferWord->disp();
+              delete bufferWord;
+            //  cout<<progress<<endl;
+            }
           }
        }
        textReader1.close();

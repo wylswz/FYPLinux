@@ -24,6 +24,10 @@ class word
       content = "";
    }
 
+   ~word()
+   {
+
+   }
    void disp()
    {
       cout<<"word: "<<content<<endl;

@@ -28,7 +28,11 @@ int main(void)
 	int wordIndex = 10;
 	int numOfDoc = 0;
 	int numOfWord = 0;
+<<<<<<< 1441d55ef0d8b5e242e34427404d9d5041159095
     int k = 0;
+=======
+    int k = 0;
+>>>>>>> asd
 	int **matrix;
 
     configReader.open("text/fconfig.config",ios::in); //read the config file
@@ -55,6 +59,7 @@ int main(void)
      }                              //initialize the matrix, based on the number of documents and keywords
 
 
+<<<<<<< 1441d55ef0d8b5e242e34427404d9d5041159095
 
 	for (int i = 0; i < numOfDoc; i++)
 	{
@@ -68,6 +73,8 @@ int main(void)
 
 
 
+=======
+>>>>>>> asd
 
 
 

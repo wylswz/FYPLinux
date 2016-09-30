@@ -52,7 +52,7 @@ double TF_IDF_CAL(char *s,  int numOfDoc)  //calculate the TF_IDF value for stri
    {
      probability[i] = (frequency[i]+1)/(sum+numOfDoc);
      TF_IDF += log(probability[i]);
-    // cout << TF_IDF<< "/" << probability[i] << endl;
+     cout << TF_IDF<< "/" << probability[i] << endl;
    }
 
 
@@ -105,7 +105,6 @@ int main()
           {
             tf_idf = TF_IDF_CAL(&content[0],numOfDoc);
       //    cout<<tf_idf<<endl;
-      //    cout<<"aaa"<<endl;;
             if (tf_idf <= 25)
             {
               word* bufferWord = new word();
@@ -116,7 +115,6 @@ int main()
               wordSet.push_back(*bufferWord);
               bufferWord->disp();
               delete bufferWord;
-            //  cout<<progress<<endl;
             }
           }
        }

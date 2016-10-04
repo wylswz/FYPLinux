@@ -1,0 +1,137 @@
+\documentclass[11pt, a4paper]{article}
+\usepackage{graphicx, fullpage, hyperref, listings}
+\usepackage{appendix, pdfpages, color}
+
+\usepackage{tocloft}            % This squashes the Table of Contents a bit
+\setlength\cftbeforesecskip{3pt}
+
+\definecolor{MyLightYellow}{cmyk}{0,0.,0.2,0}
+
+\setlength{\parskip}{4pt}        % sets spacing between paragraphs
+\interfootnotelinepenalty=500    % this prevents footnotes breaking across pages
+
+\title{\includegraphics[width=0.4\textwidth]{UnivCrest}
+        \\Preliminary Report for Project: Hidden Topic Discovery Using Machine Learning}          % <<<<<<<<< change the title as appropriate
+\author{Author: YUNLU WEN (ID:201138656)               % <<<<<<<<< your ID and group number
+        \\  Project Supervisor: Roberta Piroddi\\Project Assessor: Unassigned}                                    % <<<<<<<<< module code
+\date{\tiny{\today}}
+
+\begin{document}
+\begin{titlepage}
+\maketitle
+\addtocontents{toc}{\protect\thispagestyle{empty}} % because we don't want a page number on the title page
+                                                   % Thanks to Huang Shanyue for suggesting this
+
+\begin{abstract}
+
+\end{abstract}
+
+\fbox{
+\begin{minipage}{0.9\linewidth} \footnotesize
+\begin{center} \textbf{Declaration} \end{center}
+I confirm that I have read and understood the University’s Academic Integrity Policy.
+
+I confirm that I have acted honestly, ethically and professionally in conduct leading to assessment for the programme of study.
+
+I confirm that I have not copied material from another source nor committed plagiarism nor fabricated, falsified or embellished data when completing the attached piece of work. I confirm that I have not copied material from another source, nor colluded with any other student in the preparation and production of this work.\\[3ex]
+SIGNATURE.........................................................
+DATE..........................................................
+
+\end{minipage}
+}
+
+\tableofcontents
+\end{titlepage}
+
+
+%-------------------------------------------------------------------------------------------------------
+\section{Introduction}
+%-------------------------------------------------------------------------------------------------------
+
+\section{Project Description}
+
+\section{Methodology}
+
+\section{Project Plan}
+
+
+
+%-------------------------------------------------------------------------------------------------------
+
+
+%-------------------------------------------------------------------------------------------------------
+
+
+%------------------------------------------------------------------------------------------------------- 
+
+
+%-------------------------------------------------------------------------------------------------------
+
+%
+
+%-------------------------------------------------------------------------------------------------------
+
+\bibliographystyle{IEEEtran}
+\bibliography{MyRefs.bib}         % The file MyRefs.bib contains the actual bibliography material
+                                  % References section created automatically
+\addcontentsline{toc}{section}{References}
+
+
+
+% --------------------------- This is how to declare the Appendices section ----------------------------
+\newpage
+\appendix
+\appendixpage
+\addappheadtotoc
+
+These Appendices are all optional...
+
+%-------------------------------------------------------------------------------------------------------
+\section{Tables}
+%-------------------------------------------------------------------------------------------------------
+
+%If you have pages and pages of numberical results, these can be tabulated in the Appendix rather than included in the body of the report.
+
+%-------------------------------------------------------------------------------------------------------
+\section{Program Listings}
+%-------------------------------------------------------------------------------------------------------
+
+Program listings and source code can be neatly incorporated into your reports by including them in a \verb|\lstlisting| environment, as in Listing~\ref{myCircleCode} below, or if you are constantly editing your program, you could import the code directly from the source itself (provided you've uploaded it to your ScribTeX workspace). In this way, whenever you modify the source, all you need to do is recompile the \LaTeX code and your report document will automatically be updated. The command to use would be something like \verb|\lstinputlisting{MY_CIRCLE.m}|.
+
+%-------------------------- Source code / program listings can be inserted using like this -----------
+\lstset{language=MATLAB, frame=single, basicstyle=\footnotesize, backgroundcolor=\color{MyLightYellow}, caption={This is how to include some source code},label=myCircleCode}
+\begin{lstlisting}
+[x,y] = MY_CIRLCLE(x_centre, y_centre, radius)
+
+% MY_CIRCLE.m - A MATLAB function to draw a circle on the screen
+% Syntax is:
+%            [x,y] = MY_CIRLCLE(x_centre, y_centre, radius)
+%
+% Waleed Al-Nuaimy, 1st July 2011
+
+theta = linspace(0, 2*pi, 200);        % in radians
+x     = x_centre + radius*cos(theta);  % radius can be negative!
+y     = y_centre + radius*sin(theta);
+plot(x,y,'r-')                         % connect using red line
+axis('equal')                          % to preserve aspect ratio
+ylabel('y')
+xlabel('x')
+title(['Circle centred at (',num2str(x_centre),',', ...
+       num2str(y_centre),') of radius ',num2str(radius)])
+\end{lstlisting}
+%-------------------------------------------------------------------------------------------------------
+
+% If you want to link directly to the source code, you'll need to first upload it to this folder, then the command is: % \lstinputlisting[language=MATLAB]{MY_CIRCLE.m}
+
+%-------------------------------------------------------------------------------------------------------
+\section{Log Book}
+%-------------------------------------------------------------------------------------------------------
+
+% You can add scanned pages from your log book, or photographs of your circuit etc
+
+%-------------------------------------------------------------------------------------------------------
+\section{Data Sheets}
+%-------------------------------------------------------------------------------------------------------
+
+
+\end{document}

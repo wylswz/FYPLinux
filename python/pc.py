@@ -2,14 +2,14 @@ from bs4 import BeautifulSoup
 import urllib
 import re
 import random
+import urllib2
 
 
 
 
 
 
-
-
+user_agent = "Mozilla/5.0 (X11; U; Linux i686) Gecko/20071127 Firefox/2.0.0.11"
 LinkY = [] # These links have been used
 LinkN = []
 LinkYStringSet = set()
@@ -46,17 +46,25 @@ def hasChinese(source):
     else:
        return False
 
-
-url = 'http://www.cnblogs.com/allenblogs/archive/2010/09/13/1824842.html'
+url = 'https://medium.com/@108/the-blender-who-would-recite-shakespeare-7a34b1ccf79c#.hjhxsd6tu'
 i=0
 r=0
-soup = BeautifulSoup(getHtml(url),'html.parser')
+values = {'name' : 'WHY','location' : 'SDU','language' : 'Python'}
+headers = {'User-Agent' : user_agent}
+data = urllib.urlencode(values)
+
+Req = urllib2.Request(url,headers=headers)
+Response = urllib2.urlopen(Req)
+the_page = Response.read()
+
+soup = BeautifulSoup(the_page,'html.parser')
 p=soup.findAll('p')
 for ps in p:
-    if hasChinese(ps.get_text()):
-       print(ps.get_text())
-    else:
-       print('no chinese')
+    print(ps.get_text())
+ #   if hasChinese(ps.get_text()):
+       
+ #   else:
+       
 
 
 """

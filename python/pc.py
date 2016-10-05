@@ -4,11 +4,6 @@ import re
 import random
 import urllib2
 
-
-
-
-
-
 user_agent = "Mozilla/5.0 (X11; U; Linux i686) Gecko/20071127 Firefox/2.0.0.11"
 LinkY = [] # These links have been used
 LinkN = []

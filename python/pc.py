@@ -3,14 +3,11 @@ import urllib
 import re
 import random
 import urllib2
-
 user_agent = "Mozilla/5.0 (X11; U; Linux i686) Gecko/20071127 Firefox/2.0.0.11"
-LinkY = [] # These links have been used
-LinkN = []
-LinkYStringSet = set()
-LinkNStringSet = set()
-LinkYString=[]
-LinkNString=[]
+LinkUsed = set()
+LinkUnused = set()
+
+
 def getHtml(url):
     if re.search(r'^http.+?',url):
        print(url)
@@ -40,26 +37,52 @@ def hasChinese(source):
        return True
     else:
        return False
+def isMedium(url):
+    if re.search(r'medium',url):
+       return True
+    else:
+       return False
+
 
 url = 'https://medium.com/@108/the-blender-who-would-recite-shakespeare-7a34b1ccf79c#.hjhxsd6tu'
 i=0
 r=0
-values = {'name' : 'WHY','location' : 'SDU','language' : 'Python'}
+
+#load url
 headers = {'User-Agent' : user_agent}
-data = urllib.urlencode(values)
-
 Req = urllib2.Request(url,headers=headers)
-Response = urllib2.urlopen(Req)
-the_page = Response.read()
+try:
+    Response = urllib2.urlopen(Req)
 
-soup = BeautifulSoup(the_page,'html.parser')
-p=soup.findAll('p')
-for ps in p:
-    print(ps.get_text())
- #   if hasChinese(ps.get_text()):
+except urllib2.URLError, e:
+       print e
+
+
+else:
+     the_page = Response.read()
+     #url parser
+     soup = BeautifulSoup(the_page,'html.parser')
+     p=soup.findAll('p')
+     for ps in p:
+         print(ps.get_text())
+     #   if hasChinese(ps.get_text()):
        
- #   else:
-       
+     #   else:
+     for  link in soup.find_all('a'):
+          newUrl = link.get('href')
+          if isMedium(newUrl):
+             print(link.get('href'))
+          else:
+             print('non medium website')  
+
+
+
+
+#urlmanager
+
+
+
+
 
 
 """

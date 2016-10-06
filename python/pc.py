@@ -4,8 +4,8 @@ import re
 import random
 import urllib2
 user_agent = "Mozilla/5.0 (X11; U; Linux i686) Gecko/20071127 Firefox/2.0.0.11"
-LinkUsed = set()
-LinkUnused = set()
+urlUsed = set()
+urlUnused = set()
 
 
 def getHtml(url):
@@ -43,37 +43,53 @@ def isMedium(url):
     else:
        return False
 
-
-url = 'https://medium.com/@108/the-blender-who-would-recite-shakespeare-7a34b1ccf79c#.hjhxsd6tu'
+urlBegin = 'https://www.medium.com'
+urlUnused.add(urlBegin)
+urlUnused.add('https://medium.com/startup-grind/4-things-i-learned-designing-user-interfaces-for-vr-cc08cac9e7ec#.cx29mheja')
 i=0
 r=0
-
 #load url
-headers = {'User-Agent' : user_agent}
-Req = urllib2.Request(url,headers=headers)
-try:
-    Response = urllib2.urlopen(Req)
+while r<100:
+    r += 1
+    tempArticle = ''
+    url = urlUnused.pop()
+    print url
+    if url not in urlUsed:
+       headers = {'User-Agent' : user_agent}
+       Req = urllib2.Request(url,headers=headers)
+       try:
+           Response = urllib2.urlopen(Req)
 
-except urllib2.URLError, e:
-       print e
+       except urllib2.URLError, e:
+              print e
 
 
-else:
-     the_page = Response.read()
-     #url parser
-     soup = BeautifulSoup(the_page,'html.parser')
-     p=soup.findAll('p')
-     for ps in p:
-         print(ps.get_text())
+       else:
+           urlUsed.add(url)
+           the_page = Response.read()
+           #url parser
+           soup = BeautifulSoup(the_page,'html.parser')
+           p=soup.findAll('p')
+           for ps in p:
+               tempArticle += str(ps.get_text().encode('utf-8'))
+               print(ps.get_text())           
+
+           if len(tempArticle) > 800:
+              writer = open('texts/'+str(r),'w')
+              writer.write(tempArticle)
+              writer.close
      #   if hasChinese(ps.get_text()):
        
      #   else:
-     for  link in soup.find_all('a'):
-          newUrl = link.get('href')
-          if isMedium(newUrl):
-             print(link.get('href'))
-          else:
-             print('non medium website')  
+              for  link in soup.find_all('a'):
+                   newUrl = link.get('href')
+                   if isMedium(newUrl):
+                  # print(link.get('href'))
+                      if newUrl not in urlUsed:
+                         urlUnused.add(newUrl)
+                   else:
+                      print('non medium website')
+              
 
 
 

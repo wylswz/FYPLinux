@@ -4,6 +4,7 @@
 #include <vector>
 #include "custClass.h"
 #include <algorithm>
+#include <strings.h>
 #include <math.h>
 using namespace std;
 
@@ -20,7 +21,7 @@ double TF_IDF_CAL(char *s,  int numOfDoc)  //calculate the TF_IDF value for stri
    string readString;
    stringstream ssm;
    fstream fr;
-
+   char * readStringPtr;
    for(int i=0;i<nod;i++)
    {
      frequency[i] = 0;
@@ -36,7 +37,9 @@ double TF_IDF_CAL(char *s,  int numOfDoc)  //calculate the TF_IDF value for stri
      fr.open(&fileName[0],ios::in);
        while (fr>>readString)
        {
-          if(readString == s)
+          readStringPtr = &readString[0];
+          if(!strcasecmp(readStringPtr,s)/*s == readString*/)
+
           {
             frequency[i] += 1;
 
@@ -50,13 +53,13 @@ double TF_IDF_CAL(char *s,  int numOfDoc)  //calculate the TF_IDF value for stri
    }
    for(int i=0;i<nod;i++)
    {
-     probability[i] = (frequency[i]+1)/(sum+numOfDoc);
+     probability[i] = (frequency[i]+1)/(sum+1);
      TF_IDF += log(probability[i]);
      cout << TF_IDF<< "/" << probability[i] << endl;
    }
 
 
-
+   cout<<TF_IDF;
    return -TF_IDF;
 }
 
@@ -74,6 +77,7 @@ int main()
     int numOfDoc;
     int docCounter;
     int progress=0;
+    int tempCounter = 0; //initialize before use!!!
     double tf_idf;
     vector<word> wordSet;
     vector<string> checked;
@@ -82,8 +86,8 @@ int main()
     fstream textReader1;
     fstream textReader2;
     stringstream ssm;
-
-
+    bool stringFound;//if a string is in checked
+    
     configReader.open("text/fconfig.config",ios::in); //read the config file
     configReader >> numOfDoc;
     configReader.close();
@@ -99,9 +103,20 @@ int main()
        textReader1.open(&fileName[0],ios::in);
        while (textReader1>>content)
     {
+          tempCounter = 0;//initialize the tempCounter
           progress += 1;
           it = find(checked.begin(),checked.end(),content);
-          if (it == checked.end())   //the word cannot be found in the checked list
+          for(int i=0;i<checked.size();i++)
+          {
+              if (!strcasecmp(&content[0],&checked[i][0]))
+                 { 
+                  tempCounter += 1;   //found
+                 }
+     
+           }
+           
+          //if (it == checked.end())   //the word cannot be found in the checked list
+          if (tempCounter==0)
           {
             tf_idf = TF_IDF_CAL(&content[0],numOfDoc);
       //    cout<<tf_idf<<endl;

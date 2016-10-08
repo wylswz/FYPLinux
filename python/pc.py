@@ -38,19 +38,18 @@ def hasChinese(source):
     else:
        return False
 def isMedium(url):
-    if re.search(r'medium',url):
+    if re.search(r'^http://www.wsj.+?',str(url)):
        return True
     else:
        return False
 
-urlBegin = 'https://www.medium.com'
+urlBegin = 'https://www.wsj.com'
 urlUnused.add(urlBegin)
-urlUnused.add('https://medium.com/startup-grind/4-things-i-learned-designing-user-interfaces-for-vr-cc08cac9e7ec#.cx29mheja')
+urlUnused.add('http://www.wsj.com/articles/the-billionaires-pawn-1475851819')
 i=0
 r=0
 #load url
-while r<100:
-    r += 1
+while r<50:
     tempArticle = ''
     url = urlUnused.pop()
     print url
@@ -74,7 +73,8 @@ while r<100:
                tempArticle += str(ps.get_text().encode('utf-8'))
                print(ps.get_text())           
 
-           if len(tempArticle) > 800:
+           if len(tempArticle) > 1400:
+              r += 1
               writer = open('texts/'+str(r),'w')
               writer.write(tempArticle)
               writer.close

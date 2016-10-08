@@ -1,7 +1,7 @@
 #!/bin/bash
 #this program can be used to formulate the file names, so that they can be processed easily
-PATH = /bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin
-<<<<<<< 1441d55ef0d8b5e242e34427404d9d5041159095
+PATH=/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games
+#<<<<<<< 1441d55ef0d8b5e242e34427404d9d5041159095
 rm -rf temp
 mkdir temp
 i=0
@@ -35,7 +35,7 @@ do
 done
                   ##end of first part: rename all the txt files with number.
 
->>>>>>> asd
+#>>>>>>> asd
 cd temp
 var2=`ls`
 iterTemp=0
@@ -48,10 +48,10 @@ done
                   ##end of second part: split the atricles so that each word will occupy a single line
 cd ..
 cd ..
-<<<<<<< 1441d55ef0d8b5e242e34427404d9d5041159095
+#<<<<<<< 1441d55ef0d8b5e242e34427404d9d5041159095
 rm -rf text
 cp -r Renamer/temp text
 =======
 cp -r Renamer/temp temp
->>>>>>> asd
+#>>>>>>> asd
 exit 0

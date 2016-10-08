@@ -12,7 +12,7 @@ using namespace std;
 double TF_IDF_CAL(char *s,  int numOfDoc)  //calculate the TF_IDF value for string s
 {
    double TF_IDF=0;
-   const int nod = numOfDoc;
+   const int nod = 44;
    double frequency[nod];
    double probability[nod];
    double sum=0;
@@ -53,13 +53,13 @@ double TF_IDF_CAL(char *s,  int numOfDoc)  //calculate the TF_IDF value for stri
    }
    for(int i=0;i<nod;i++)
    {
-     probability[i] = (frequency[i]+1)/(sum+1);
+     probability[i] = (frequency[i]+1)/(sum+nod);
      TF_IDF += log(probability[i]);
      cout << TF_IDF<< "/" << probability[i] << endl;
    }
 
 
-   cout<<TF_IDF;
+   //cout<<TF_IDF;
    return -TF_IDF;
 }
 
@@ -85,6 +85,7 @@ int main()
     fstream configReader;
     fstream textReader1;
     fstream textReader2;
+    fstream keyWordWritter;
     stringstream ssm;
     bool stringFound;//if a string is in checked
     
@@ -92,7 +93,7 @@ int main()
     configReader >> numOfDoc;
     configReader.close();
 
-    for(docCounter=0;docCounter<numOfDoc;docCounter++)
+    for(docCounter=0;docCounter<10;docCounter++)
     {
        ssm << docCounter;
        ssm >> tempString;
@@ -105,7 +106,6 @@ int main()
     {
           tempCounter = 0;//initialize the tempCounter
           progress += 1;
-          it = find(checked.begin(),checked.end(),content);
           for(int i=0;i<checked.size();i++)
           {
               if (!strcasecmp(&content[0],&checked[i][0]))
@@ -120,10 +120,9 @@ int main()
           {
             tf_idf = TF_IDF_CAL(&content[0],numOfDoc);
       //    cout<<tf_idf<<endl;
-            if (tf_idf <= 25)
+            if (tf_idf <= 100000&&tf_idf >= 0)
             {
               word* bufferWord = new word();
-              checked.push_back(content);   //add this word to the checked list
               bufferWord->ANO = docCounter;
               bufferWord->content = content;
               bufferWord->setTF_IDF(tf_idf);
@@ -132,10 +131,17 @@ int main()
               delete bufferWord;
             }
           }
+       
+          checked.push_back(content);   //add this word to the checked list
        }
        textReader1.close();
     }
-
+    keyWordWritter.open("text/key.txt",ios::out);
+    for (int i=0;i<wordSet.size();i++)
+    {
+        keyWordWritter << wordSet[i].content << "\t";
+    }
+    keyWordWritter.close();
 
 
     return 0;

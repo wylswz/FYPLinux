@@ -12,7 +12,7 @@ using namespace std;
 double TF_IDF_CAL(char *s,  int numOfDoc)  //calculate the TF_IDF value for string s
 {
    double TF_IDF=0;
-   const int nod = 44;
+   const int nod = 50;
    double frequency[nod];
    double probability[nod];
    double sum=0;
@@ -54,8 +54,8 @@ double TF_IDF_CAL(char *s,  int numOfDoc)  //calculate the TF_IDF value for stri
    for(int i=0;i<nod;i++)
    {
      probability[i] = (frequency[i]+1)/(sum+nod);
-     TF_IDF += log(probability[i]);
-     cout << TF_IDF<< "/" << probability[i] << endl;
+     TF_IDF += log(sqrt(probability[i]));
+    // cout << TF_IDF<< "/" << probability[i] << endl;
    }
 
 
@@ -120,7 +120,7 @@ int main()
           {
             tf_idf = TF_IDF_CAL(&content[0],numOfDoc);
       //    cout<<tf_idf<<endl;
-            if (tf_idf <= 100000&&tf_idf >= 0)
+            if (tf_idf < 300&&tf_idf >= 0)
             {
               word* bufferWord = new word();
               bufferWord->ANO = docCounter;

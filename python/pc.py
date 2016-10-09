@@ -38,10 +38,17 @@ def hasChinese(source):
     else:
        return False
 def isMedium(url):
-    if re.search(r'^http://www.wsj.+?',str(url)):
-       return True
+    print(url)
+    try:
+        a = re.search(ur'^http://www.wsj.+?',url)
+    except UnicodeEncodeError:
+           print('encode error')
     else:
-       return False
+           print('encode success')
+    if a:
+         return True
+    else:
+         return False
 
 urlBegin = 'https://www.wsj.com'
 urlUnused.add(urlBegin)
@@ -52,7 +59,7 @@ r=0
 while r<50:
     tempArticle = ''
     url = urlUnused.pop()
-    print url
+   # print url
     if url not in urlUsed:
        headers = {'User-Agent' : user_agent}
        Req = urllib2.Request(url,headers=headers)
@@ -70,8 +77,11 @@ while r<50:
            soup = BeautifulSoup(the_page,'html.parser')
            p=soup.findAll('p')
            for ps in p:
-               tempArticle += str(ps.get_text().encode('utf-8'))
-               print(ps.get_text())           
+               psStr = str(ps.get_text().encode('utf-8'))
+               psStr = re.sub(r'[^a-zA-Z\s\n]',' ',psStr)
+               if len(psStr)>=2:
+                  tempArticle += str(psStr)
+       #        print(ps.get_text())           
 
            if len(tempArticle) > 1400:
               r += 1
@@ -83,12 +93,19 @@ while r<50:
      #   else:
               for  link in soup.find_all('a'):
                    newUrl = link.get('href')
-                   if isMedium(newUrl):
-                  # print(link.get('href'))
-                      if newUrl not in urlUsed:
-                         urlUnused.add(newUrl)
+                   if newUrl != None and type(newUrl) == type(u"") and newUrl.find(u'\u2019') >= 0:
+                      newUrl = newUrl.replace(u'\u2019', '\'')
+                   try:
+                       tempStr = str(newUrl)
+                   except UnicodeEncodeError:
+                          pass
                    else:
-                      print('non medium website')
+                        if isMedium(tempStr):
+                  # print(link.get('href'))
+                           if newUrl not in urlUsed:
+                              urlUnused.add(newUrl)
+         #          else:
+        #              print('non medium website')
               
 
 
@@ -103,32 +120,4 @@ while r<50:
 
 """
 
-while i<50:
-      i+=1
-      soup = BeautifulSoup(getHtml(url),'html.parser')
-      for link in soup.find_all('a'):
-   # print(link.get('href'))
-          LinkN.append(link.get('href') )
-
-   # print(link.get('href'))
-
-      LinkYStringSet.add(url)
-      LinkYString = [L for L in LinkYStringSet]
-      for element in LinkN:
-          if element is not None:
-             LinkNStringSet.add(element.decode('gbk','ignore'))
-      for element in LinkNStringSet:
-          LinkNString.append(element)
-      
-      while LinkNString[r] in LinkYString:
-            r=random.randint(0,len(LinkNString)-1)      
-      url=LinkNString[r]
-
-writer = open('url','w')
-writer.writelines(LinkNString)
-writer.close()
-
-writer = open('urlUsed','w')
-writer.writelines(LinkYString)
-writer.close()
 """

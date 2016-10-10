@@ -83,7 +83,7 @@ while r<50:
                   tempArticle += str(psStr)
        #        print(ps.get_text())           
 
-           if len(tempArticle) > 1400:
+           if len(tempArticle) > 2000:
               r += 1
               writer = open('texts/'+str(r),'w')
               writer.write(tempArticle)

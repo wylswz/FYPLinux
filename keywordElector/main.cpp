@@ -54,7 +54,7 @@ double TF_IDF_CAL(char *s,  int numOfDoc)  //calculate the TF_IDF value for stri
    for(int i=0;i<nod;i++)
    {
      probability[i] = (frequency[i]+1)/(sum+nod);
-     TF_IDF += log(sqrt(probability[i]));
+     TF_IDF += log(probability[i])*(2/(1+exp(3-sum)));
     // cout << TF_IDF<< "/" << probability[i] << endl;
    }
 
@@ -120,7 +120,7 @@ int main()
           {
             tf_idf = TF_IDF_CAL(&content[0],numOfDoc);
       //    cout<<tf_idf<<endl;
-            if (tf_idf < 300&&tf_idf >= 0)
+            if (tf_idf < 380&&tf_idf >= 50)
             {
               word* bufferWord = new word();
               bufferWord->ANO = docCounter;

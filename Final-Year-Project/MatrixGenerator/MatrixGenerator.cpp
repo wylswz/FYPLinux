@@ -5,6 +5,7 @@ using namespace std;
 
 int main(void)
 {
+    int test = 99;
 	fstream textReader;
 	fstream keyReader;
 	fstream matrixWrite;
@@ -31,6 +32,8 @@ int main(void)
     int k = 0;
 	int **matrix;
 
+
+cout<<"asd";
     configReader.open("text/fconfig.config",ios::in); //read the config file
     configReader >> numOfDoc;
     configReader >> numOfWord;
@@ -76,7 +79,6 @@ int main(void)
 
 
 
-
 		int c1 = 0;
         k = 0;
 		for (k = 0; k < numOfDoc; k++)
@@ -86,7 +88,7 @@ int main(void)
 				ssm << k + 1;
 				ssm >> tempStr;
 				fileNameS = "text/" + tempStr;
-				cout << "Analyzing: " << fileName << endl;
+				cout << "Analyzing: " << fileNameS << endl;
 				ssm.clear();
 				ssm.str("");       //clear the stream
 				fileName = &fileNameS[0];
@@ -98,15 +100,15 @@ int main(void)
 					{
 						tempCounter += 1;
 					}
-					matrix[k][c1] = tempCounter;
 
 				}
+                matrix[k][c1] = tempCounter;
 				textReader.close();
 
 			}
 		}
 	keyReader.close();
-
+////////////////////////////////////////////////////////////////////////////////////////////////
 	for (int i = 0; i < keyArray.size(); i++)
 	{
 		cout << "\t" << keyArray[i];

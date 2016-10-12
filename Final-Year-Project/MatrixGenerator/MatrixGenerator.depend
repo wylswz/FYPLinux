@@ -2,6 +2,8 @@
 1468120624 source:/home/johnny/Desktop/git1/Final-Year-Project/MatrixGenerator/MatrixGenerator/stdafx.cpp
 	"stdafx.h"
 
+1468126498 
+
 1468121730 /home/johnny/Desktop/git1/Final-Year-Project/MatrixGenerator/MatrixGenerator/stdafx.h
 	<iostream>
 	<string>
@@ -24,5 +26,20 @@
 	<sstream>
 
 1468491058 source:/home/johnny/Desktop/git1/fyp/Final-Year-Project/MatrixGenerator/MatrixGenerator.cpp
+	"stdafx.h"
+
+1476296796 source:/home/parallels/Desktop/git/FYPLinux/Final-Year-Project/MatrixGenerator/MatrixGenerator.cpp
+	"stdafx.h"
+
+1476259138 /home/parallels/Desktop/git/FYPLinux/Final-Year-Project/MatrixGenerator/stdafx.h
+	<iostream>
+	<string>
+	<fstream>
+	<stdlib.h>
+	<cstdio>
+	<vector>
+	<sstream>
+
+1476259138 source:/home/parallels/Desktop/git/FYPLinux/Final-Year-Project/MatrixGenerator/stdafx.cpp
 	"stdafx.h"
 

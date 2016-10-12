@@ -89,7 +89,7 @@ while r<500:
                if len(psStr)>2:
                   wordLemmatized = wnl.lemmatize(psStr)
                   wordStemed = stem.stem(wordLemmatized)
-                  tempArticle += str(wordStemed)
+                  tempArticle += str(wordStemed).lower()
        #        print(ps.get_text())           
 
            if len(tempArticle) > 600:

@@ -1,5 +1,5 @@
 #!bin/bash
-PATH = /bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin
+PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin
 #count the number of documents
 i=0 ##docs
 j=0 ##words

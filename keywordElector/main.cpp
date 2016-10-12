@@ -93,7 +93,7 @@ int main()
     configReader >> numOfDoc;
     configReader.close();
 
-    for(docCounter=0;docCounter<10;docCounter++)
+    for(docCounter=0;docCounter<50;docCounter++)
     {
        ssm << docCounter;
        ssm >> tempString;
@@ -120,7 +120,7 @@ int main()
           {
             tf_idf = TF_IDF_CAL(&content[0],numOfDoc);
       //    cout<<tf_idf<<endl;
-            if (tf_idf < 380&&tf_idf >= 50)
+            if (tf_idf < 400&&tf_idf >= 45)
             {
               word* bufferWord = new word();
               bufferWord->ANO = docCounter;

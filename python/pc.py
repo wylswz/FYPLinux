@@ -1,4 +1,6 @@
 from bs4 import BeautifulSoup
+from nltk.stem import PorterStemmer
+from nltk.stem import WordNetLemmatizer
 import urllib
 import re
 import random
@@ -40,7 +42,7 @@ def hasChinese(source):
 def isMedium(url):
     print(url)
     try:
-        a = re.search(ur'^http://www.wsj.+?',url)
+        a = re.search(ur'^https://medium.+?',url)
     except UnicodeEncodeError:
            print('encode error')
     else:
@@ -50,13 +52,18 @@ def isMedium(url):
     else:
          return False
 
-urlBegin = 'https://www.wsj.com'
+
+stem = PorterStemmer()
+wnl = WordNetLemmatizer()
+wordStemed = ''
+wordLemmatized = ''
+urlBegin = 'https://www.medium.comi'
 urlUnused.add(urlBegin)
-urlUnused.add('http://www.wsj.com/articles/the-billionaires-pawn-1475851819')
+urlUnused.add('https://medium.com/@LeonXDavis/living-beyond-the-fear-living-beyondthewall-d043abcfe144#.xebvyonmg')
 i=0
 r=0
 #load url
-while r<50:
+while r<500:
     tempArticle = ''
     url = urlUnused.pop()
    # print url
@@ -79,11 +86,13 @@ while r<50:
            for ps in p:
                psStr = str(ps.get_text().encode('utf-8'))
                psStr = re.sub(r'[^a-zA-Z\s\n]',' ',psStr)
-               if len(psStr)>=2:
-                  tempArticle += str(psStr)
+               if len(psStr)>2:
+                  wordLemmatized = wnl.lemmatize(psStr)
+                  wordStemed = stem.stem(wordLemmatized)
+                  tempArticle += str(wordStemed)
        #        print(ps.get_text())           
 
-           if len(tempArticle) > 2000:
+           if len(tempArticle) > 800:
               r += 1
               writer = open('texts/'+str(r),'w')
               writer.write(tempArticle)

@@ -92,7 +92,7 @@ while r<100:
                   tempArticle += str(wordStemed).lower()
        #        print(ps.get_text())           
 
-           if len(tempArticle) > 800:
+           if len(tempArticle) > 600:
               r += 1
               writer = open('texts/'+str(r),'w')
               writer.write(tempArticle)

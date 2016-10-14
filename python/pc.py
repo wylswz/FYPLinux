@@ -59,11 +59,11 @@ wordStemed = ''
 wordLemmatized = ''
 urlBegin = 'https://www.medium.comi'
 urlUnused.add(urlBegin)
-urlUnused.add('https://medium.com/@LeonXDavis/living-beyond-the-fear-living-beyondthewall-d043abcfe144#.xebvyonmg')
+urlUnused.add('https://medium.com/startup-grind/crowdsourcing-edits-for-the-third-wave-d5018cb789cd#.kb3z9csye')
 i=0
 r=0
 #load url
-while r<500:
+while r<100:
     tempArticle = ''
     url = urlUnused.pop()
    # print url
@@ -92,7 +92,7 @@ while r<500:
                   tempArticle += str(wordStemed).lower()
        #        print(ps.get_text())           
 
-           if len(tempArticle) > 600:
+           if len(tempArticle) > 800:
               r += 1
               writer = open('texts/'+str(r),'w')
               writer.write(tempArticle)

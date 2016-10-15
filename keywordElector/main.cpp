@@ -12,7 +12,7 @@ using namespace std;
 double TF_IDF_CAL(char *s,  int numOfDoc)  //calculate the TF_IDF value for string s
 {
    double TF_IDF=0;
-   const int nod = 200;
+   const int nod = 800;
    double frequency[nod];
    double probability[nod];
    double sum=0;
@@ -118,7 +118,7 @@ int main()
           //if (it == checked.end())   //the word cannot be found in the checked list
           if (tempCounter==0)
           {
-            tf_idf = TF_IDF_CAL(&content[0],numOfDoc);
+            tf_idf = 3; // TF_IDF_CAL(&content[0],numOfDoc);
       //    cout<<tf_idf<<endl;
             if (tf_idf < 100&&tf_idf >= 0&&content.length()>=3)
             {

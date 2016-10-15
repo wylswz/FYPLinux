@@ -82,15 +82,15 @@ cout<<"asd";
 		int c1 = 0;
         k = 0;
 		for (k = 0; k < numOfDoc; k++)
-		{
-			for (c1 = 0; c1 < numOfWord; c1++)
-			{
-				ssm << k + 1;
+		{	
+                         	ssm << k + 1;
 				ssm >> tempStr;
 				fileNameS = "text/" + tempStr;
-				cout << "Analyzing: " << fileNameS << endl;
 				ssm.clear();
-				ssm.str("");       //clear the stream
+				ssm.str("");     
+			for (c1 = 0; c1 < numOfWord; c1++)
+			{
+  //cleavr the stream
 				fileName = &fileNameS[0];
 				textReader.open(fileName, ios::in);
 				tempCounter = 0;
@@ -106,6 +106,7 @@ cout<<"asd";
 				textReader.close();
 
 			}
+                        cout << "Analyzing: " << fileNameS << endl;
 		}
 	keyReader.close();
 ////////////////////////////////////////////////////////////////////////////////////////////////

@@ -63,7 +63,7 @@ urlUnused.add('https://medium.com/startup-grind/crowdsourcing-edits-for-the-thir
 i=0
 r=0
 #load url
-while r<100:
+while r<400:
     tempArticle = ''
     url = urlUnused.pop()
    # print url

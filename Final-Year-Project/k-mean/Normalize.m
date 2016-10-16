@@ -20,7 +20,7 @@ parfor i = 1:1:rows  %%parallel conputing to accelerate
         if a(1,J) == 0
             H(i,1) = H(i,1) + 0;
         else
-            H(i,1) = H(i,1) - a(1,J)*log(a(1,J))*atan((sum_of_rowT(i)-5)/2 + 1.7);
+            H(i,1) = H(i,1) - 1/log(rows)*a(1,J)*log(a(1,J))*1/(1+exp(-(sum_of_rowT(i)-10)));
         %entropy of a word
         end
     end
@@ -30,7 +30,7 @@ end
 parfor i = 1:1:rows
     b = zeros(1,cols);
     for j = 1:1:cols
-        b(1,j) = sqrt((1-H(i,1)).*T(i,j))./sum_of_colT(j);
+        b(1,j) = (1-H(i,1)).*T(i,j)./sum_of_colT(j);
     end
     W(i,:) = b
 end

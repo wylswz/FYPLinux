@@ -20,7 +20,7 @@ parfor i = 1:1:rows  %%parallel conputing to accelerate
         if a(1,J) == 0
             H(i,1) = H(i,1) + 0;
         else
-            H(i,1) = H(i,1) - 1/log(rows)*a(1,J)*log(a(1,J))*1/(1+exp(-(sum_of_rowT(i)-2)));
+            H(i,1) = H(i,1) - 1/log(rows)*a(1,J)*log(a(1,J));%*1/(1+exp(-(sum_of_rowT(i)-2)));
         %entropy of a word
         end
     end

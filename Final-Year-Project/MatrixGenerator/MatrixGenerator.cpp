@@ -4,7 +4,6 @@ using namespace std;
 
 int main(void)
 {
-    int test = 99;
 	fstream textReader;
 	fstream keyReader;
 	fstream matrixWrite;
@@ -30,9 +29,8 @@ int main(void)
 	int numOfWord = 0;
     int k = 0;
 	int **matrix;
+	int a = 0;
 
-
-cout<<"asd";
     configReader.open("text/fconfig.config",ios::in); //read the config file
     configReader >> numOfDoc;
     configReader >> numOfWord;
@@ -81,12 +79,12 @@ cout<<"asd";
 		int c1 = 0;
         k = 0;
 		for (k = 0; k < numOfDoc; k++)
-		{	
+		{
                          	ssm << k + 1;
 				ssm >> tempStr;
 				fileNameS = "text/" + tempStr;
 				ssm.clear();
-				ssm.str("");     
+				ssm.str("");
 			for (c1 = 0; c1 < numOfWord; c1++)
 			{
   //cleavr the stream

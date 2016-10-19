@@ -1,5 +1,4 @@
 // MatrixGenerator.cpp : main project file.
-
 #include "stdafx.h"
 using namespace std;
 
@@ -96,7 +95,7 @@ cout<<"asd";
 				tempCounter = 0;
 				while (textReader >> scanner)
 				{
-					if (scanner.find(keyArray[c1], 0) != string::npos && scanner.length() - keyArray[c1].length() < 2)
+					if (strcmp(&scanner[0], &keyArray[c1][0]) == 0) //(scanner.find(keyArray[c1], 0) != string::npos && scanner.length() - keyArray[c1].length() < 2)
 					{
 						tempCounter += 1;
 					}

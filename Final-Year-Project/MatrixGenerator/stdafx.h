@@ -11,4 +11,5 @@
 #include<cstdio>
 #include <vector>
 #include<sstream>
+#include<string.h>
 // TODO: reference additional headers your program requires here

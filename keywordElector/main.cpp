@@ -12,7 +12,7 @@ using namespace std;
 double TF_IDF_CAL(char *s,  int numOfDoc)  //calculate the TF_IDF value for string s
 {
    double TF_IDF=0;
-   const int nod = 800;
+   const int nod = 300;
    double frequency[nod];
    double probability[nod];
    double sum=0;

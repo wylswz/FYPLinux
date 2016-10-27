@@ -5,6 +5,7 @@ import urllib
 import re
 import random
 import urllib2
+import json
 user_agent = "Mozilla/5.0 (X11; U; Linux i686) Gecko/20071127 Firefox/2.0.0.11"
 urlUsed = set()
 urlUnused = set()
@@ -21,28 +22,12 @@ def getHtml(url):
        print(url)
        print('invalid url!!!!!')
        return('http://www.baidu.com')
-def writeUrl(urlList):
-    writer = open('url','w')
-    writer.writelines(urlList)
-    writer.close()
 
-def readUrl(fileName):
-    reader = open(fileName,'r')
-    readList = reader.readlines()
-    reader.close()    
-    return readList
 
-def hasChinese(source):
-   # temp = source.decode('utf8')
-    chineseExpression = ur'[\u4e00-\u9fa5]'
-    if re.search(chineseExpression,source):
-       return True
-    else:
-       return False
 def isMedium(url):
     print(url)
     try:
-        a = re.search(r'(^http://www.bbc.co.uk/news/world.+?)',url)
+        a = re.search(r'^http://www.bbc.co.uk/news/.*',url)
 
     except UnicodeEncodeError:
            print('encode error')
@@ -105,23 +90,40 @@ while r<800:
      #   if hasChinese(ps.get_text()):
        
      #   else:
-              for  link in soup.find_all('a'):
-                   newUrl = link.get('href')
-                   if newUrl != None and type(newUrl) == type(u"") and newUrl.find(u'\u2019') >= 0:
-                      newUrl = newUrl.replace(u'\u2019', '\'')
-                   try:
-                       tempStr = str(newUrl)
-                   except UnicodeEncodeError:
-                          pass
-                   else:
-                        if isMedium(tempStr):
-                  # print(link.get('href'))
-                           if newUrl not in urlUsed:
-                              urlUnused.add(newUrl)
+           for  link in soup.find_all('a'):
+                newUrl = link.get('href')
+                if newUrl != None and type(newUrl) == type(u"") and newUrl.find(u'\u2019') >= 0:
+                   newUrl = newUrl.replace(u'\u2019', '\'')
+                try:
+                    tempStr = str(newUrl)
+                except UnicodeEncodeError:
+                       pass
+                else:
+                     if isMedium(tempStr):
+               # print(link.get('href'))
+                        if newUrl not in urlUsed:
+                           urlUnused.add(newUrl)
          #          else:
         #              print('non medium website')
-              
 
+           scripts = soup.find_all('scripts')
+           for script in scripts:
+               linkFromScript = re.findall(r'http://www.bbc.co.uk/news/.*',str(script))
+                          
+               for  linkfs in linkFromScript:
+                    link = linkfs.replace('\"','')
+                    newUrl = str(link)
+                    if newUrl != None and type(newUrl) == type(u"") and newUrl.find(u'\u2019') >= 0:
+                       newUrl = newUrl.replace(u'\u2019', '\'')
+                    try:
+                        tempStr = str(newUrl)
+                    except UnicodeEncodeError:
+                           pass
+                    else:
+                         if isMedium(tempStr):
+               # print(link.get('href'))
+                            if newUrl not in urlUsed:
+                               urlUnused.add(newUrl)
 
 
 

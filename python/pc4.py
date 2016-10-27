@@ -42,7 +42,8 @@ def hasChinese(source):
 def isMedium(url):
     print(url)
     try:
-        a = re.search(ur'^http://www.wsj.+?',url)
+        a = re.search(r'(^http://www.bbc.co.uk/news/world.+?)',url)
+
     except UnicodeEncodeError:
            print('encode error')
     else:
@@ -57,11 +58,11 @@ stem = PorterStemmer()
 wnl = WordNetLemmatizer()
 wordStemed = ''
 wordLemmatized = ''
-urlBegin = 'http://www.wsj.com/europe'
+urlBegin = 'http://www.bbc.co.uk/news'
 urlUnused.add(urlBegin)
-urlUnused.add('http://www.wsj.com/articles/adapter-or-die-must-have-dongles-for-your-iphone-7-android-and-laptop-1476296274?mod=ST1')
+urlUnused.add('http://www.bbc.co.uk/news/world')
 i=0
-r=100
+r=301
 #load url
 while r<800:
     tempArticle = ''
@@ -92,10 +93,14 @@ while r<800:
                   tempArticle += str(wordStemed).lower()
        #        print(ps.get_text())           
 
-           if len(tempArticle) > 800:
+           if len(tempArticle) > 650:
               r += 1
               writer = open('texts/'+str(r),'w')
               writer.write(tempArticle)
+              writer.close
+              
+              writer = open('labellist','a')
+              writer.write(url + '\t' + str(r) + '\n')
               writer.close
      #   if hasChinese(ps.get_text()):
        

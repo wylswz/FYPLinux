@@ -6,6 +6,7 @@ import re
 import random
 import urllib2
 import json
+import os
 user_agent = "Mozilla/5.0 (X11; U; Linux i686) Gecko/20071127 Firefox/2.0.0.11"
 urlUsed = set()
 urlUnused = set()
@@ -27,7 +28,7 @@ def getHtml(url):
 def isMedium(url):
     print(url)
     try:
-        a = re.search(r'^http://www.bbc.co.uk/news/.*',url)
+        a = re.search(r'^http://www\.bbc\.(co\.uk|com).*',url)
 
     except UnicodeEncodeError:
            print('encode error')
@@ -46,8 +47,10 @@ wordLemmatized = ''
 urlBegin = 'http://www.bbc.co.uk/news'
 urlUnused.add(urlBegin)
 urlUnused.add('http://www.bbc.co.uk/news/world')
+urlUnused.add('http://www.bbc.co.uk/news/technology')
+urlUnused.add('http://www.bbc.co.uk/news/entertainment_and_arts')
 i=0
-r=301
+r=300
 #load url
 while r<800:
     tempArticle = ''
@@ -78,14 +81,14 @@ while r<800:
                   tempArticle += str(wordStemed).lower()
        #        print(ps.get_text())           
 
-           if len(tempArticle) > 650:
+           if len(tempArticle) > 600:
               r += 1
               writer = open('texts/'+str(r),'w')
               writer.write(tempArticle)
               writer.close
               
               writer = open('labellist','a')
-              writer.write(url + '\t' + str(r) + '\n')
+              writer.write(url + '\t' + str(r) + os.linesep)
               writer.close
      #   if hasChinese(ps.get_text()):
        

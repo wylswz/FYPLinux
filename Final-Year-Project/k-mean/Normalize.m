@@ -30,7 +30,7 @@ end
 parfor i = 1:1:rows
     b = zeros(1,cols);
     for j = 1:1:cols
-        b(1,j) = (1-H(i,1)).*T(i,j)./sum_of_colT(j);%*1/(1+exp((sum_of_rowT(i)-2)));
+        b(1,j) = (1-H(i,1)).*T(i,j)./sum_of_colT(j)*1/(1+exp((sum_of_rowT(i)-1)));
     end
     W(i,:) = b
 end

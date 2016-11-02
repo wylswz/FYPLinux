@@ -29,12 +29,13 @@ def isMedium(url):
     print(url)
     try:
         a = re.search(r'^http://www\.bbc\.(co\.uk|com).*',url)
+        u = re.search(r'(programme|music)',url)
 
     except UnicodeEncodeError:
            print('encode error')
     else:
            print('encode success')
-    if a:
+    if a and not u:
          return True
     else:
          return False
@@ -52,7 +53,7 @@ urlUnused.add('http://www.bbc.co.uk/news/entertainment_and_arts')
 i=0
 r=300
 #load url
-while r<800:
+while r<1500:
     tempArticle = ''
     url = urlUnused.pop()
    # print url
@@ -64,7 +65,8 @@ while r<800:
 
        except urllib2.URLError, e:
               print e
-
+       except socket.error,e:
+              print e
 
        else:
            urlUsed.add(url)
@@ -75,7 +77,8 @@ while r<800:
            for ps in p:
                psStr = str(ps.get_text().encode('utf-8'))
                psStr = re.sub(r'[^a-zA-Z\s\n]',' ',psStr)
-               if len(psStr)>2:
+               psStrNS = re.sub(r'[^a-zA-Z\s\n]','',psStr)
+               if len(psStrNS)>2:
                   wordLemmatized = wnl.lemmatize(psStr)
                   wordStemed = stem.stem(wordLemmatized)
                   tempArticle += str(wordStemed).lower()

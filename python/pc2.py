@@ -62,9 +62,9 @@ urlBegin = 'http://www.wsj.com/europe'
 urlUnused.add(urlBegin)
 urlUnused.add('http://www.wsj.com/articles/adapter-or-die-must-have-dongles-for-your-iphone-7-android-and-laptop-1476296274?mod=ST1')
 i=0
-r=100
+r=401
 #load url
-while r<200:
+while r<800:
     tempArticle = ''
     url = urlUnused.pop()
    # print url

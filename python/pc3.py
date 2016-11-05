@@ -62,9 +62,9 @@ urlBegin = 'http://thenextweb.com/section/tech/'
 urlUnused.add(urlBegin)
 urlUnused.add('http://thenextweb.com/apple/2016/10/13/apple-in-talks-with-australian-company-to-bring-dynamic-keyboard-tech-to-macbooks/')
 i=0
-r=200
+r=801
 #load url
-while r<300:
+while r<1200:
     tempArticle = ''
     url = urlUnused.pop()
    # print url

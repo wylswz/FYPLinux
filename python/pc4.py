@@ -28,14 +28,14 @@ def getHtml(url):
 def isMedium(url):
     print(url)
     try:
-        a = re.search(r'^http://www\.bbc\.(co\.uk|com).*',url)
-        u = re.search(r'(programme|music)',url)
+        a = re.search(r'^http://www\.bbc\.(co\.uk|com)/news.*',url)
+       # u = re.search(r'(programme|music|academy)',url)
 
     except UnicodeEncodeError:
            print('encode error')
     else:
            print('encode success')
-    if a and not u:
+    if a:# and not u:
          return True
     else:
          return False
@@ -51,9 +51,9 @@ urlUnused.add('http://www.bbc.co.uk/news/world')
 urlUnused.add('http://www.bbc.co.uk/news/technology')
 urlUnused.add('http://www.bbc.co.uk/news/entertainment_and_arts')
 i=0
-r=300
+r=1201
 #load url
-while r<1500:
+while r<1600:
     tempArticle = ''
     url = urlUnused.pop()
    # print url

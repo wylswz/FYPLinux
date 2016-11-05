@@ -29,8 +29,8 @@ for z = 1:1:EPOCH
       classCounterX(index) = classCounterX(index) + pSet{i}.coord(1);
       classCounterY(index) = classCounterY(index) + pSet{i}.coord(2);
       classCounter(index) = classCounter(index) + 1;
-      scatter(pSet{i}.coord(1),pSet{i}.coord(2),'x');
-      hold on;
+      %scatter(pSet{i}.coord(1),pSet{i}.coord(2),'x');
+      %hold on;
   end
   for j = 1:1:K
       kSet(j,1) = classCounterX(j)/classCounter(j);

@@ -11,7 +11,7 @@ do
   i=`expr $i + 1`
 done
 
-i=`expr $i - 3`
+i=`expr $i - 4`
 touch fconfig.config
 echo $i >> fconfig.config ##number of documents
 

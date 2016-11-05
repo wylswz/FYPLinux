@@ -64,7 +64,7 @@ urlUnused.add('https://medium.com/strategic-social-news-wire/do-googles-search-a
 i=0
 r=0
 #load url
-while r<100:
+while r<400:
     tempArticle = ''
     url = urlUnused.pop()
    # print url

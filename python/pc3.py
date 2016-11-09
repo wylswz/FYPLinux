@@ -6,6 +6,7 @@ import urllib
 import re
 import random
 import urllib2
+import os
 user_agent = "Mozilla/5.0 (X11; U; Linux i686) Gecko/20071127 Firefox/2.0.0.11"
 urlUsed = set()
 urlUnused = set()
@@ -62,7 +63,7 @@ urlBegin = 'http://thenextweb.com/section/tech/'
 urlUnused.add(urlBegin)
 urlUnused.add('http://thenextweb.com/apple/2016/10/13/apple-in-talks-with-australian-company-to-bring-dynamic-keyboard-tech-to-macbooks/')
 i=0
-r=801
+r=800
 #load url
 while r<1200:
     tempArticle = ''
@@ -100,6 +101,10 @@ while r<1200:
               r += 1
               writer = open('texts/'+str(r),'w')
               writer.write(tempArticle)
+              writer.close
+
+              writer = open('labellist3','a')
+              writer.write(url + '\t' + str(r) + os.linesep)
               writer.close
      #   if hasChinese(ps.get_text()):
        

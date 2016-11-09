@@ -51,7 +51,7 @@ urlUnused.add('http://www.bbc.co.uk/news/world')
 urlUnused.add('http://www.bbc.co.uk/news/technology')
 urlUnused.add('http://www.bbc.co.uk/news/entertainment_and_arts')
 i=0
-r=1201
+r=1200
 #load url
 while r<1600:
     tempArticle = ''
@@ -90,7 +90,7 @@ while r<1600:
               writer.write(tempArticle)
               writer.close
               
-              writer = open('labellist','a')
+              writer = open('labellist4','a')
               writer.write(url + '\t' + str(r) + os.linesep)
               writer.close
      #   if hasChinese(ps.get_text()):

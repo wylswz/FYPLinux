@@ -6,6 +6,7 @@ import re
 import random
 import urllib2
 import nltk
+import os
 user_agent = "Mozilla/5.0 (X11; U; Linux i686) Gecko/20071127 Firefox/2.0.0.11"
 urlUsed = set()
 urlUnused = set()
@@ -62,7 +63,7 @@ urlBegin = 'http://www.wsj.com/europe'
 urlUnused.add(urlBegin)
 urlUnused.add('http://www.wsj.com/articles/adapter-or-die-must-have-dongles-for-your-iphone-7-android-and-laptop-1476296274?mod=ST1')
 i=0
-r=401
+r=400
 #load url
 while r<800:
     tempArticle = ''
@@ -100,6 +101,10 @@ while r<800:
               r += 1
               writer = open('texts/'+str(r),'w')
               writer.write(tempArticle)
+              writer.close
+
+              writer = open('labellist2','a')
+              writer.write(url + '\t' + str(r) + os.linesep)
               writer.close
      #   if hasChinese(ps.get_text()):
        

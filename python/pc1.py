@@ -6,6 +6,7 @@ import re
 import random
 import urllib2
 import nltk
+import os
 user_agent = "Mozilla/5.0 (X11; U; Linux i686) Gecko/20071127 Firefox/2.0.0.11"
 urlUsed = set()
 urlUnused = set()
@@ -99,6 +100,10 @@ while r<400:
               r += 1
               writer = open('texts/'+str(r),'w')
               writer.write(tempArticle)
+              writer.close
+
+              writer = open('labellist1','a')
+              writer.write(url + '\t' + str(r) + os.linesep)
               writer.close
      #   if hasChinese(ps.get_text()):
        

@@ -1,6 +1,0 @@
-please put testing data set here(documents) and run text conter to count the number of keywords. 
-
-1.make sure that the keyword of testing set is the same with that of training set
-2.the data in fconfig file maybe incorrect, so double check the value to makesure the furst number is the same as the number of document files.
-
-fconfig file records the number of documents and keywords. The first number is document, second one is words.

@@ -3,7 +3,6 @@
 %for each number in the matrix, add 0.001 to make sure there's 
 %no row of zero
 function [W H] = Normalize(T)
-%parpool('local',2)
 size_of_t = size(T);
 rows = size_of_t(1);
 cols = size_of_t(2);
@@ -25,8 +24,7 @@ parfor i = 1:1:rows  %%parallel conputing to accelerate
         end
     end
 end
-
-    
+ 
 parfor i = 1:1:rows
     b = zeros(1,cols);
     for j = 1:1:cols

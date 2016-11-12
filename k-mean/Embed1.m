@@ -7,13 +7,13 @@ cols = size_of_t(2);
 sum_of_colT = sum(T,1); %%total terms in one document
 W_NEW = zeros(rows,cols);
 US = U*S;
-M = pinv(US);
+
 parfor i = 1:1:rows
-    b = zeros(1,cols)
+    b = zeros(1,cols);
     for j = 1:1:cols
-    b(j) = (1-H(i))*T(i,j)/sum_of_colT(j);       
+    b(1,j) = (1-H(i))*T(i,j)/sum_of_colT(j)       
     end
-    V_NEW(i,:) = b;
+    W_NEW(i,:) = b;
 end
 
 V_NEW = transpose(W_NEW)*U*S^(-1);

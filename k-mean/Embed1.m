@@ -16,5 +16,5 @@ parfor i = 1:1:rows
     W_NEW(i,:) = b;
 end
 
-V_NEW = transpose(W_NEW)*U*S^(-1);
+V_NEW = transpose(W_NEW)*U*inv(S);
 end

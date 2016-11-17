@@ -2,8 +2,8 @@ import nltk
 from nltk.stem import PorterStemmer
 from nltk.stem import WordNetLemmatizer
 
-fromDir = 'test/'
-toDir = 'testStemed/'
+fromDir = 'train/'
+toDir = 'trainStemed/'
 
 def get_tokens(i):
     with open(fromDir + str(i),'r') as shakes:
@@ -13,7 +13,8 @@ def get_tokens(i):
 
 stem = PorterStemmer()
 wnl = WordNetLemmatizer()
-for i in range(1,5):
+for i in range(1,46):
+    print 'processing document :',i
     tokens = get_tokens(i)
     listTemp = list(enumerate(tokens))
     for term in listTemp:

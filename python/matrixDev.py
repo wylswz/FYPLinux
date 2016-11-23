@@ -44,6 +44,11 @@ for i in range(1,numOfTrain + 1):
         if term[1] not in tokenList and len(term[1])>1:
            tokenList.append(term[1])
 
+print('Writing keywords to file')
+with open('keys','w') as fKey:
+     for i in range(1,len(tokenList)):
+         fKey.write(str(tokenList[i])+'\t')
+     
 with open('matrixTrain','w') as fTrain:
      for i in range(1,numOfTrain + 1):
          corpus = get_corpus(i,str(args.dir)+'/')

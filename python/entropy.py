@@ -64,9 +64,11 @@ for i in range(1,numOfTrain + 1):
            tokenList.append(term[1])
            if entropy < 0.4:
               filted.append(term[1])
+              with open('keys','a') as fKey:
+                   fKey.write(str(term[1])+'\t')
 
 print('Writing keywords to file')
-with open('keys','w') as fKey:
-     for i in range(1,len(filted)):
-         fKey.write(str(filted[i])+'\t')
+#with open('keys','w') as fKey:
+ #    for i in range(1,len(filted)):
+  #       fKey.write(str(filted[i])+'\t')
 

@@ -24,8 +24,8 @@ for i in range(1,number+1):
     print 'processing document :',i
     tokens = get_tokens(i)
     listTemp = list(enumerate(tokens))
-    for term in listTemp:
-        wordLemmatized = wnl.lemmatize(term[1])
-        wordStemmed = stem.stem(wordLemmatized)
-        with open(toDir + str(i),'a') as writer:
+    with open(toDir + str(i),'a') as writer:
+         for term in listTemp:
+             wordLemmatized = wnl.lemmatize(term[1])
+             wordStemmed = stem.stem(wordLemmatized)
              writer.write(str(wordStemmed)+'\t')

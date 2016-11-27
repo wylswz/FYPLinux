@@ -18,6 +18,12 @@ args = parser.parse_args()
 ####################################################################
 print args.dir, args.dirT, args.train, args.test
 
+class countSet:
+
+      def __init__(self,entropy,occur):
+          self.occur = occur
+          self.entropy = entropy
+
 numOfTrain =args.train
 numOfTest = args.test
 
@@ -43,9 +49,8 @@ def tf_idf(word,docidx):
         P[0,i] = (occur[0,i]+1)/(length[0,i] + numOfTrain)
         PLOGP[0,i] = P[0,i]*np.log2(P[0,i])
     entropy = -np.tanh(PLOGP.sum()*occur.sum())
-    return entropy
-    print word
-    print entropy
+    return countSet(entropy, occur)
+
         
         
         
@@ -55,20 +60,24 @@ tokenList = []
 tokenTupleList = ()
 print('Gathering terms, please wait......')
 
-Tempcounter = 0
-for i in range(1,numOfTrain + 1):
-    tokens = get_tokens(i,str(args.dir)+'/')
-    listTemp = list(enumerate(tokens))
-    for term in listTemp:
-        if term[1] not in tokenList and len(term[1])>2:
-           entropy = tf_idf(term[1],i)
-           tokenList.append(term[1])
-           if 0.04 < entropy < 0.618 and Tempcounter < 10000:
-              Tempcounter = Tempcounter + 1
-              print Tempcounter
-              filted.append(term[1])
-              with open('keys','a') as fKey:
-                   fKey.write(str(term[1])+'\t')
+
+
+
+with open('matrix1','a') as matrixWriter:
+     for i in range(1,numOfTrain + 1):
+         tokens = get_tokens(i,str(args.dir)+'/')
+         listTemp = list(enumerate(tokens))
+         for term in listTemp:
+             if term[1] not in tokenList and len(term[1])>2:
+                countSet1 = tf_idf(term[1],i)
+                tokenList.append(term[1])
+                if countSet1.entropy < 0.618:
+                   filted.append(term[1])
+                   for iter in range(0,countSet1.occur.size-20):
+                       matrixWriter.write(str(countSet1.occur[0,iter]) + '\t')
+                   matrixWriter.write('\n')
+#              with open('keys','a') as fKey:
+#                   fKey.write(str(term[1])+'\t')
 
 print('Writing keywords to file')
 #with open('keys','w') as fKey:

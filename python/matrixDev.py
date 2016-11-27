@@ -56,30 +56,38 @@ tokenTupleList = ()
 print('Gathering terms, please wait......')
 
 
-for i in range(1,numOfTrain + 1):
-    tokens = get_tokens(i,str(args.dir)+'/')
-    listTemp = list(enumerate(tokens))
-    for term in listTemp:
-        if term[1] not in tokenList and len(term[1])>1:
-            
-           tokenList.append(term[1])
+#for i in range(1,numOfTrain + 1):
+#    tokens = get_tokens(i,str(args.dir)+'/')
+#    listTemp = list(enumerate(tokens))
+#    for term in listTemp:
+#        if term[1] not in tokenList and len(term[1])>1:
+#            
+#           tokenList.append(term[1])
 
-print('Writing keywords to file')
-with open('keys','w') as fKey:
-     for i in range(1,len(tokenList)):
-         fKey.write(str(tokenList[i])+'\t')
+
+
+#print('Writing keywords to file')
+#with open('keys','w') as fKey:
+#     for i in range(1,len(tokenList)):
+#         fKey.write(str(tokenList[i])+'\t')
+
+with open('keys','r') as kRead:
+     tokenList = nltk.word_tokenize(kRead.read())
+     print(len(tokenList))
      
+
 with open('matrixTrain','w') as fTrain:
      for i in range(1,numOfTrain + 1):
-         corpus = get_corpus(i,str(args.dir)+'/')
+         corpus = get_tokens(i,str(args.dir)+'/')
          print('processing training text: ',i)
          for j in range(1,len(tokenList)):
+            # print('processing word: ',j)
              a = corpus.count(tokenList[j])
              fTrain.write(str(a)+'\t')
          fTrain.write('\n')    
 with open('matrixTest','w') as fTest:
      for i in range(1,numOfTest + 1):
-         corpus = get_corpus(i,str(args.dirT)+'/')
+         corpus = get_tokens(i,str(args.dirT)+'/')
          print 'processing testing text: ',i
          for j in range(1,len(tokenList)):
              a = corpus.count(tokenList[j])

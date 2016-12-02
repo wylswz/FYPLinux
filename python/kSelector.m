@@ -19,9 +19,12 @@ for k = 1:1:iter %iter k from 1 to 30
     var(2,k) = sum(vard)/k;
     var(3,k) = max(vard);  
 end
+%plot(var(1,:))
+%hold on
 plot(var(2,:))
 hold on
-
+%plot(var(3,:))
+%hold on
 
 end
 

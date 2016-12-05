@@ -1,4 +1,5 @@
 import nltk
+import re
 from nltk.stem import PorterStemmer
 from nltk.stem import WordNetLemmatizer
 import argparse
@@ -15,7 +16,12 @@ number = args.number
 def get_tokens(i):
     with open(fromDir + str(i),'r') as shakes:
          text = shakes.read()
-         tokens = nltk.word_tokenize(text)
+         try:
+             tokens = nltk.word_tokenize(text)
+         except UnicodeError:
+             print('Decode Error')
+         else:
+             pass
     return tokens
 
 stem = PorterStemmer()
@@ -24,8 +30,9 @@ for i in range(1,number+1):
     print 'processing document :',i
     tokens = get_tokens(i)
     listTemp = list(enumerate(tokens))
-    with open(toDir + str(i),'a') as writer:
+    with open(toDir + str(i),'w') as writer:
          for term in listTemp:
              wordLemmatized = wnl.lemmatize(term[1])
              wordStemmed = stem.stem(wordLemmatized)
-             writer.write(str(wordStemmed)+'\t')
+             wordStemmed = re.sub(r'[^a-zA-Z\s\n]',' ',wordStemmed)
+             writer.write(str(wordStemmed).lower()+'\t')

@@ -3,8 +3,6 @@ import math
 import string
 import argparse
 import numpy as np
-import multiprocessing as mp
-from multiprocessing import Queue
 from collections import Counter
 from sklearn.feature_extraction.text import CountVectorizer
 
@@ -22,9 +20,6 @@ print args.dir, args.dirT, args.train, args.test
 
 numOfTrain =args.train
 numOfTest = args.test
-numOfCore = 4
-
-    ##initialize the matrix  
 
 def get_tokens(i,dirc):
     with open(dirc + str(i),'r') as shakes:
@@ -51,63 +46,51 @@ def tf_idf(word):
     entropy = PLOGP.sum()
     print word
     print entropy
-
-def trainline(i,q): ##i is the index of article
-    corpus = get_tokens(i+1,str(args.dir)+'/')
-    print('processing training text: ',i+1)
-    line = np.zeros([1,len(tokenList)])
-    for j in range(len(tokenList)):
-        a = corpus.count(tokenList[j])
-        line[0,j] = a
-    q.put(line)
-
-def testline(i,q):
-    corpus = get_tokens(i+1,str(args.dirT)+'/')
-    print ('processing testing text: ',i+1)
-    line = np.zeros([1,len(tokenList)])
-    for j in range(len(tokenList)):
-        a = corpus.count(tokenList[j])
-        line[0,j] = a
-    q.put(line)
-
-def parMatrix():
-    batchTrain = numOfTrain/numOfCore
-    batchTest = numOfTest/numOfCore
-    queueList = []
-    processList = []
-    for i in range(numOfCore):
-        queueList.append(Queue())
-    for i in range(batchTrain):
-        p1 = mp.Process(target = trainline,args = (i,queueList[0]))
-        p2 = mp.Process(target = trainline,args = (i+1*batchTrain,queueList[1]))
-        p3 = mp.Process(target = trainline,args = (i+2*batchTrain,queueList[2]))
-        p4 = mp.Process(target = trainline,args = (i+3*batchTrain,queueList[3]))
-        p1.start()
-        p2.start()
-        p3.start()
-        p4.start()
-        matrixTrain[i]=queueList[0].get()
-        matrixTrain[i+batchTrain]=queueList[1].get()
-        matrixTrain[i+2*batchTrain]=queueList[2].get()
-        matrixTrain[i+3*batchTrain]=queueList[3].get()
+        
+        
         
 
 
-
-          
-if __name__=='__main__':
-    print('Gathering terms, please wait......')
-    tokenList = []
-    with open('keys','r') as kRead:
-      tokenList = nltk.word_tokenize(kRead.read())
-      print(len(tokenList))
-    matrixTrain = np.zeros([numOfTrain,len(tokenList)])
-    matrixTest = np.zeros([numOfTest,len(tokenList)])
-    parMatrix()
-
-    print(np.sum(matrixTrain))
+tokenList = []
+tokenTupleList = ()
+print('Gathering terms, please wait......')
 
 
+#for i in range(1,numOfTrain + 1):
+#    tokens = get_tokens(i,str(args.dir)+'/')
+#    listTemp = list(enumerate(tokens))
+#    for term in listTemp:
+#        if term[1] not in tokenList and len(term[1])>1:
+#            
+#           tokenList.append(term[1])
 
-  
+
+
+#print('Writing keywords to file')
+#with open('keys','w') as fKey:
+#     for i in range(1,len(tokenList)):
+#         fKey.write(str(tokenList[i])+'\t')
+
+with open('keys','r') as kRead:
+     tokenList = nltk.word_tokenize(kRead.read())
+     print(len(tokenList))
+     
+
+with open('matrixTrain','w') as fTrain:
+     for i in range(1,numOfTrain + 1):
+         corpus = get_tokens(i,str(args.dir)+'/')
+         print('processing training text: ',i)
+         for j in range(1,len(tokenList)):
+            # print('processing word: ',j)
+             a = corpus.count(tokenList[j])
+             fTrain.write(str(a)+'\t')
+         fTrain.write('\n')    
+with open('matrixTest','w') as fTest:
+     for i in range(1,numOfTest + 1):
+         corpus = get_tokens(i,str(args.dirT)+'/')
+         print 'processing testing text: ',i
+         for j in range(1,len(tokenList)):
+             a = corpus.count(tokenList[j])
+             fTest.write(str(a)+'\t')
+         fTest.write('\n')    
 

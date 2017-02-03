@@ -31,11 +31,14 @@ en_stop = get_stop_words('en')
 
 tokens = []
 
-tk_reader = open('tokens.tk','r')
-tokens = pickle.load(tk_reader)
+with  open('corpus.cp','r') as cp_reader:
+      corpus = pickle.load(cp_reader)
 
-dictionary = corpora.Dictionary(tokens)
-corpus = [dictionary.doc2bow(text) for text in tokens] #bow
+with open('dictionary.dc','r') as dic_reader:
+     dictionary = pickle.load(dic_reader)
 
-ldamodel = models.LdaMulticore(corpus,num_topics=100,id2word=dictionary,passes=5,workers=4)
+#dictionary = corpora.Dictionary(tokens)
+#corpus = [dictionary.doc2bow(text) for text in tokens] #bow
+
+ldamodel = models.LdaMulticore(corpus,num_topics=10,id2word=dictionary,passes=25,workers=4)
 ldamodel.save('model')

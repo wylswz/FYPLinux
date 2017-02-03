@@ -26,7 +26,7 @@ en_stop = get_stop_words('en')
 
 tokens = []
 
-for j in range(1,80):
+for j in range(1,4000):
     token = get_tokens(j,'wiki/')
     stopped_tokens = [i for i in token if not i in en_stop]
     p_stemmer = PorterStemmer()
@@ -39,5 +39,10 @@ for j in range(1,80):
             pass
     tokens.append(stemed_tokens)
 
-with open('tokens.tk','w') as tk_writter:
-     pickle.dump(tokens,tk_writter)
+dictionary = corpora.Dictionary(tokens)
+corpus = [dictionary.doc2bow(text) for text in tokens]
+
+with open('corpus.cp','w') as tk_writter:
+     pickle.dump(corpus,tk_writter)
+with open('dictionary.dc','w') as dic_writter:
+     pickle.dump(dictionary,dic_writter)

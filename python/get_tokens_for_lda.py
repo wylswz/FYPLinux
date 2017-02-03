@@ -13,6 +13,12 @@ from nltk.stem.porter import PorterStemmer
 from stop_words import get_stop_words
 from gensim import corpora, models
 
+parser = argparse.ArgumentParser(description="this will get tokens for LDA model, just type in number of documents")
+parser.add_argument('docnum',help=' Number of training texts',type=int)
+args=parser.parse_args()
+
+
+
 def get_tokens(i,dirc):
     with open(dirc + str(i),'r') as shakes:
          text = shakes.read()
@@ -25,8 +31,8 @@ def get_corpus(i,dirc):
 en_stop = get_stop_words('en')
 
 tokens = []
-
-for j in range(1,4000):
+num_doc=args.docnum
+for j in range(num_doc):
     token = get_tokens(j,'wiki/')
     stopped_tokens = [i for i in token if not i in en_stop]
     p_stemmer = PorterStemmer()
@@ -46,3 +52,5 @@ with open('corpus.cp','w') as tk_writter:
      pickle.dump(corpus,tk_writter)
 with open('dictionary.dc','w') as dic_writter:
      pickle.dump(dictionary,dic_writter)
+with open('docConfig.cfg','w') as cfg_writter:
+     pickle.dump(num_doc,cfg_writter)

@@ -38,8 +38,10 @@ print('loading LDA model...')
 LDA = models.LdaModel.load('model')
 print('success!')
 doc_topics = LDA.get_document_topics(corpus,minimum_probability=None,minimum_phi_value=None,per_word_topics=False)
-num_doc = 3999
-num_topic = 10
+with open('topicConfig.cfg','r') as cfg_reader:
+     num_topic = pickle.load(cfg_reader)
+with open('docConfig.cfg','r') as cfg_reader:     
+     num_topic = pickle.load(cfg_reader)
 DOC_TOPICS = np.zeros([num_doc,num_topic]) ##document-topic matrix
 for i in range(num_doc):
     for t in doc_topics[i]:

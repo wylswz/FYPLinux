@@ -7,6 +7,7 @@ import multiprocessing as mp
 from multiprocessing import Queue
 from collections import Counter
 from sklearn.feature_extraction.text import CountVectorizer
+import scipy.io as io
 
 #################add help document and argument here#################
 parser = argparse.ArgumentParser(description='I really want to write a clear discription of this program to help users, but you know what, this is a HELP DOCUMENT!!!! If anyone can understand the documentation of software without going to any forums, then that must be bullshit. So, lets talk about how to use this command: #$%^&*(*&^%$#$%^&*(&^%$#$%^&*(&^%$ ')
@@ -104,7 +105,7 @@ if __name__=='__main__':
     matrixTrain = np.zeros([numOfTrain,len(tokenList)])
     matrixTest = np.zeros([numOfTest,len(tokenList)])
     parMatrix()
-
+    io.savemat('matrix.mat',{'matrixTest':matrixTest,'matrixTrain':matrixTrain})
     print(np.sum(matrixTrain))
 
 

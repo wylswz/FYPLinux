@@ -32,7 +32,7 @@ en_stop = get_stop_words('en')
 
 tokens = []
 num_doc=args.docnum
-for j in range(num_doc):
+for j in range(1,num_doc+1):
     token = get_tokens(j,'wiki/')
     stopped_tokens = [i for i in token if not i in en_stop]
     p_stemmer = PorterStemmer()

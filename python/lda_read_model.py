@@ -54,6 +54,43 @@ def plotCloud():
       if ipt == 'exit()':
           break
 
+def plotTopic():
+    num_words=10
+    while True:
+      try:
+          ipt = raw_input('Topic:')
+      except ImportError:
+          print 'invalid type'
+      else:
+          
+          if ipt == 'exit()':
+               break
+          tpc_idx=int(ipt)-1
+          if tpc_idx > num_words-1:
+              print 'Topic index too large'
+          else:
+               
+               prob_list=np.zeros(num_words)
+               index = np.arange(num_words)
+               bar_width = 0.3
+               wordList = []
+               word_tuple = LDA.get_topic_terms(tpc_idx,topn=num_words)
+               print word_tuple
+               j=0
+               for i in word_tuple:
+                   prob_list[j] = i[1]
+                   j=j+1
+               for i in range(num_words):
+                   wordList.append(str(dictionary[word_tuple[i][0]]))
+               plt.bar(index,prob_list,bar_width) 
+               plt.xticks(index + bar_width / 2, wordList)
+
+               plt.show()
+ 
+
+
+def plotTopicProp():
+    pass
 def startQuery():
     while True:
 
@@ -108,58 +145,6 @@ def startQuery():
 
            
 
-def get_idf_co(c,w,tokens):
-    N = len(tokens)
-    NC = 0.001
-    NW = 0.001
-    co = 0   
-    for iter in range(0,N):
-        tf_c = 0
-        tf_w = 0
-        tf_c = tokens[iter].count(c)
-        tf_w = tokens[iter].count(w)
-        if tf_c > 0:
-           NC = NC+1
-        if tf_w >0:
-           NW = NW + 1
-        co = co + tf_c*tf_w
-    idf = min(1,(math.log(N/NC)/math.log(10))/5)
-    idfW = min(1,(math.log(N/NW)/math.log(10))/5)
-    #print idf
-    return (idf,idfW,co)
-
-def expand(index,query,concept):
-    ##index is returned by knn search, query is original query words, concept is keys
-    query_stemed = []
-    for term in query:
-        term = wnl.lemmatize(term)
-        term = stem.stem(term)
-        query_stemed.append(term) ##preprocess the query
-        
-
-    R = len(concept)
-    C = len(query)
-    N = len(index)
-    delta = 0.4
-    coov = np.zeros((R,C))
-    tokens = [' ' for i in index] ##documents returned before
-    temp_counter=0
-    for iter in index:
-        ####################################add a concept list here
-        tokens[temp_counter] = get_tokens_by_dir('wikiStemed/' + str(iter))
-        temp_counter = temp_counter+1 
-    for i in range(0,R):  ##R is num of concept
-        for j in range(0,C): #num of query terms  
-            (idf,idfW,co) = get_idf_co(concept[i],query_stemed[j],tokens) 
-            #print idf,co         
-            coov[i,j] = math.pow((math.log(co+1)/math.log(10)*idf/(math.log(N)/math.log(10)) + delta),idfW)
-            #print coov[i,j]
-        print i
-    print coov
-    return coov 
-    
-
-
 
 
 
@@ -206,17 +191,20 @@ if __name__=='__main__':
            DOC_TOPICS[i,t[0]] = t[1]     ##construct the doc-topic matrix
    while True:
        try:
-           ipt = raw_input('Option: 1. plot, 2. query')
+           ipt = raw_input('Option: 1. plotCloud, 2. query, 3. plotTopic')
        except IOError:
            pass
        else:
            if ipt == 'exit()':
                break
-           if ipt == '1':
+           if ipt == '1' or ipt == 'plotCloud':
                plotCloud() 
-           else:
+           if ipt == '2' or ipt == 'query':
                startQuery()
-           
+           if ipt == '3' or ipt == 'plotTopic':
+               plotTopic()
+           else:
+               pass
 
                  
    

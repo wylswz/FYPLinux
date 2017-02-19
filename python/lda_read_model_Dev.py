@@ -143,6 +143,43 @@ def startQuery():
            dist,indices=lshf.kneighbors(QUERY_TOPIC,n_neighbors=20)
            print indices
 
+def TopicLine(task_list,q):
+    submatrix = np.zeros([len(task_list),num_topic])
+    for i in range(len(task_list)):
+       # print task_list[i]
+        for t in doc_topics[task_list[i]]:
+            submatrix[i,t[0]] = t[1]
+    q.put(submatrix)
+
+def parTopic():
+    task_list = []
+    queue_list = []
+    for i in range(4):
+        queue_list.append(Queue())
+
+    for i in range(3):
+        task_list.append(range(i*(num_doc/4),(i+1)*(num_doc/4)))
+    task_list.append(range(3*(num_doc/4),num_doc))
+   # print task_list
+
+    
+    process_list = []
+    p1 = mp.Process(target = TopicLine,args = (task_list[0],queue_list[0]))
+    p2 = mp.Process(target = TopicLine,args = (task_list[1],queue_list[1]))
+    p3 = mp.Process(target = TopicLine,args = (task_list[2],queue_list[2]))
+    p4 = mp.Process(target = TopicLine,args = (task_list[3],queue_list[3]))
+    p1.start()
+    p2.start()
+    p3.start()
+    p4.start() 
+    m1 = queue_list[0].get()
+    m2 = queue_list[1].get()
+    m3 = queue_list[2].get()
+    m4 = queue_list[3].get()       
+    DOC_TOPICS = np.concatenate((m1,m2,m3,m4))
+    return DOC_TOPICS
+
+
            
 
 
@@ -150,7 +187,7 @@ def startQuery():
 
 
 if __name__=='__main__':
-
+   num_core=4  ##number of cpu cores
 
    stem = PorterStemmer()
    wnl = WordNetLemmatizer()
@@ -186,10 +223,12 @@ if __name__=='__main__':
 
    DOC_TOPICS = np.zeros([num_doc,num_topic]) ##document-topic matrix
    print 'setting up LDA model... this may take a few minutes...'
-   for i in range(num_doc):
-       for t in doc_topics[i]:
-           DOC_TOPICS[i,t[0]] = t[1]     ##construct the doc-topic matrix
+  
+   DOC_TOPICS =  parTopic()   ##this is newer parallel version
    print DOC_TOPICS
+
+
+
    while True:
        try:
            ipt = raw_input('Option: 1. plotCloud, 2. query, 3. plotTopic')

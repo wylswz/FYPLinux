@@ -7,6 +7,7 @@ import multiprocessing as mp
 from multiprocessing import Queue
 from collections import Counter
 from sklearn.feature_extraction.text import CountVectorizer
+import parallelLib as par
 import scipy.io as io
 
 #################add help document and argument here#################
@@ -53,16 +54,21 @@ def tf_idf(word):
     print word
     print entropy
 
-def trainline(i,q): ##i is the index of article
-    corpus = get_tokens(i+1,str(args.dir)+'/')
-    print('processing training text: ',i+1)
-    line = np.zeros([1,len(tokenList)])
-    for j in range(len(tokenList)):
-        a = corpus.count(tokenList[j])
-        line[0,j] = a
-    q.put(line)
+def trainline(taskListTrain,q,id): ##i is the index of article
+    print('Worker %d starting' %id)
+    taskSize = len(taskListTrain)
+    subMatrix = np.zeros([taskSize,len(tokenList)])
+    for i in range(taskSize):
+        corpus = get_tokens(taskListTrain[i]+1,str(args.dir)+'/')
+        #print('processing training text: ',taskListTrain[i]+1)
+        line = np.zeros([1,len(tokenList)])
+        for j in range(len(tokenList)):
+            a = corpus.count(tokenList[j])
+            subMatrix[i,j] = a
+    print('Worker %d ending' %id)
+    q.put(subMatrix)
 
-def testline(i,q):
+def testline(taskListTest,q):
     corpus = get_tokens(i+1,str(args.dirT)+'/')
     print ('processing testing text: ',i+1)
     line = np.zeros([1,len(tokenList)])
@@ -72,25 +78,29 @@ def testline(i,q):
     q.put(line)
 
 def parMatrix():
-    batchTrain = numOfTrain/numOfCore
-    batchTest = numOfTest/numOfCore
+    taskTrain = range(numOfTrain)
+    taskTest = range(numOfTest)
+    taskListTrain = par.splitTask(taskTrain,4)
+    taskListTest = par.splitTask(taskTest,4)
     queueList = []
     processList = []
     for i in range(numOfCore):
         queueList.append(Queue())
-    for i in range(batchTrain):
-        p1 = mp.Process(target = trainline,args = (i,queueList[0]))
-        p2 = mp.Process(target = trainline,args = (i+1*batchTrain,queueList[1]))
-        p3 = mp.Process(target = trainline,args = (i+2*batchTrain,queueList[2]))
-        p4 = mp.Process(target = trainline,args = (i+3*batchTrain,queueList[3]))
-        p1.start()
-        p2.start()
-        p3.start()
-        p4.start()
-        matrixTrain[i]=queueList[0].get()
-        matrixTrain[i+batchTrain]=queueList[1].get()
-        matrixTrain[i+2*batchTrain]=queueList[2].get()
-        matrixTrain[i+3*batchTrain]=queueList[3].get()
+    p1 = mp.Process(target = trainline,args = (taskListTrain[0],queueList[0],1))
+    p2 = mp.Process(target = trainline,args = (taskListTrain[1],queueList[1],2))
+    p3 = mp.Process(target = trainline,args = (taskListTrain[2],queueList[2],3))
+    p4 = mp.Process(target = trainline,args = (taskListTrain[3],queueList[3],4))
+    p1.start()
+    p2.start()
+    p3.start()
+    p4.start()
+    m1=queueList[0].get()
+    m2=queueList[1].get()
+    m3=queueList[2].get()
+    m4=queueList[3].get()
+    m=np.concatenate((m1,m2,m3,m4))
+    return m
+        
         
 
 
@@ -104,7 +114,7 @@ if __name__=='__main__':
       print(len(tokenList))
     matrixTrain = np.zeros([numOfTrain,len(tokenList)])
     matrixTest = np.zeros([numOfTest,len(tokenList)])
-    parMatrix()
+    matrixTrain =  parMatrix()
     io.savemat('matrix.mat',{'matrixTest':matrixTest,'matrixTrain':matrixTrain})
     print(np.sum(matrixTrain))
 

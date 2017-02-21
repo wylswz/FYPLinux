@@ -17,7 +17,7 @@ from sklearn.neighbors import LSHForest
 from wordcloud import WordCloud,ImageColorGenerator,STOPWORDS
 import matplotlib.pyplot as plt
 from scipy.misc import imread
-import 成哥OS_API
+
 
 ######## add some arguments to the program
 

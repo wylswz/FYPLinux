@@ -59,8 +59,7 @@ def trainline(taskListTrain,q,id): ##i is the index of article
     taskSize = len(taskListTrain)
     subMatrix = np.zeros([taskSize,len(tokenList)])
     for i in range(taskSize):
-        corpus = get_tokens(taskListTrain[i]+1,str(args.dir)+'/')
-        #print('processing training text: ',taskListTrain[i]+1)
+        corpus = get_tokens(taskListTrain[i]+1,str(args.dirT)+'/')
         line = np.zeros([1,len(tokenList)])
         for j in range(len(tokenList)):
             a = corpus.count(tokenList[j])
@@ -68,14 +67,20 @@ def trainline(taskListTrain,q,id): ##i is the index of article
     print('Worker %d ending' %id)
     q.put(subMatrix)
 
-def testline(taskListTest,q):
-    corpus = get_tokens(i+1,str(args.dirT)+'/')
-    print ('processing testing text: ',i+1)
-    line = np.zeros([1,len(tokenList)])
-    for j in range(len(tokenList)):
-        a = corpus.count(tokenList[j])
-        line[0,j] = a
-    q.put(line)
+def testline(taskListTest,q,id): ##i is the index of article
+    print('Worker %d starting' %id)
+    taskSize = len(taskListTest)
+    subMatrix = np.zeros([taskSize,len(tokenList)])
+    for i in range(taskSize):
+        corpus = get_tokens(taskListTest[i]+1,str(args.dir)+'/')
+        line = np.zeros([1,len(tokenList)])
+        for j in range(len(tokenList)):
+            a = corpus.count(tokenList[j])
+            subMatrix[i,j] = a
+    print('Worker %d ending' %id)
+    q.put(subMatrix)
+
+
 
 def parMatrix():
     taskTrain = range(numOfTrain)
@@ -99,7 +104,24 @@ def parMatrix():
     m3=queueList[2].get()
     m4=queueList[3].get()
     m=np.concatenate((m1,m2,m3,m4))
-    return m
+
+    p1 = mp.Process(target = testline,args = (taskListTest[0],queueList[0],1))
+    p2 = mp.Process(target = testline,args = (taskListTest[1],queueList[1],2))
+    p3 = mp.Process(target = testline,args = (taskListTest[2],queueList[2],3))
+    p4 = mp.Process(target = testline,args = (taskListTest[3],queueList[3],4))
+    p1.start()
+    p2.start()
+    p3.start()
+    p4.start()
+    n1=queueList[0].get()
+    n2=queueList[1].get()
+    n3=queueList[2].get()
+    n4=queueList[3].get()
+    n=np.concatenate((n1,n2,n3,n4))
+
+
+
+    return m,n
         
         
 
@@ -114,7 +136,7 @@ if __name__=='__main__':
       print(len(tokenList))
     matrixTrain = np.zeros([numOfTrain,len(tokenList)])
     matrixTest = np.zeros([numOfTest,len(tokenList)])
-    matrixTrain =  parMatrix()
+    matrixTrain, matrixTest =  parMatrix()
     io.savemat('matrix.mat',{'matrixTest':matrixTest,'matrixTrain':matrixTrain})
     print(np.sum(matrixTrain))
 

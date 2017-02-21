@@ -214,7 +214,6 @@ if __name__=='__main__':
 
    print('loading LDA model...')
    LDA = models.LdaModel.load('model')
-   #print dictionary
    print('success!')
    doc_topics = LDA.get_document_topics(corpus,minimum_probability=None,minimum_phi_value=None,per_word_topics=False)
    with open('topicConfig.cfg','r') as cfg_reader:
@@ -222,7 +221,7 @@ if __name__=='__main__':
    with open('docConfig.cfg','r') as cfg_reader:     
         num_doc = pickle.load(cfg_reader)  ##read number of docs from the config file
 
-   DOC_TOPICS = np.zeros([num_doc,num_topic]) ##document-topic matrix
+
    print 'setting up LDA model... this may take a few minutes...'
   
    DOC_TOPICS =  parTopic()   ##this is newer parallel version

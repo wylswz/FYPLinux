@@ -5,7 +5,7 @@ import parallelLib as par
 import multiprocessing as mp
 from multiprocessing import Queue
 
-def save_init_model(doc_topic,topic_word,assigned_corpus,dir):
+def save_model(doc_topic,topic_word,assigned_corpus,dir):
     with open(dir + '/Gibbs_doc_topic.init','w') as writer:
         pickle.dump(doc_topic,writer)
     with open(dir + '/Gibbs_topic_word.init','w') as writer:
@@ -13,7 +13,7 @@ def save_init_model(doc_topic,topic_word,assigned_corpus,dir):
     with open(dir + '/Gibbs_corpus.init','w') as writer:
         pickle.dump(assigned_corpus,writer)
 
-def read_init_model(dir):
+def read_model(dir):
     with open(dir + '/Gibbs_doc_topic.init','r') as writer:
         doc_topic = pickle.load(writer)
 
@@ -24,6 +24,7 @@ def read_init_model(dir):
         corpus = pickle.load(writer)
     
     return doc_topic,topic_word,corpus
+
 
 
 
@@ -89,27 +90,27 @@ def init(num_doc,num_word,num_topic,corpus): ##initialize assignment
 
 
 
-def gibbs_sampling(num_topic,alpha,beta):
+def gibbs_sampling(num_topic,alpha,beta,corpus,dictionary,init_dir=None):
 
-    with  open('corpus.cp','r') as cp_reader:
-          corpus = pickle.load(cp_reader)
-
-    with open('dictionary.dc','r') as dic_reader:
-         dictionary = pickle.load(dic_reader)
     num_doc = len(corpus)
     num_word = len(dictionary)
 
+    if init_dir == None:
+       assigned_corpus, doc_topic, topic_word = init(num_doc,num_word,num_topic,corpus)
+    else:
+       doc_topic,topic_word,assigned_corpus = read_model(init_dir)
 
+       
 
    # assigned_corpus, doc_topic, topic_word = init(num_doc,num_word,num_topic,corpus)
-   # save_init_model(doc_topic,topic_word,assigned_corpus,'Gibbs')
+   # save_model(doc_topic,topic_word,assigned_corpus,'GibbsInit')
 
 
-    doc_topic,topic_word,assigned_corpus = read_init_model('Gibbs')
+    
     key_words = []
-    for m in range(20):
+    for epoch in range(30):
         a_1 = []
-        print('iteration %d' %m)
+        print('iteration %d' %epoch)
         for i in range(len(assigned_corpus)):
             for j in range(len(assigned_corpus[i])):
                 ##index assignment
@@ -140,12 +141,16 @@ def gibbs_sampling(num_topic,alpha,beta):
         print a_1
     for i in a_1:
         print [dictionary[idx] for idx in i[0:14]]
+    return doc_topic,topic_word,assigned_corpus
         
-            
-    
+def load_corpus():
+    print 'Loading Corpus'
+    with  open('corpus.cp','r') as cp_reader:
+         corpus = pickle.load(cp_reader)
 
-
-
+    with open('dictionary.dc','r') as dic_reader:
+        dictionary = pickle.load(dic_reader)  
+    return dictionary,corpus             
 
 
 
@@ -153,4 +158,6 @@ def gibbs_sampling(num_topic,alpha,beta):
 
 
 if __name__=='__main__':
-   gibbs_sampling(10,0.1,0.1)
+   dictionary,corpus = load_corpus()
+   doc_topic,topic_word,corpus = gibbs_sampling(4,0.1,0.1,corpus,dictionary,init_dir='GibbsInit')
+   save_model(doc_topic,topic_word,corpus,'GibbsModel')

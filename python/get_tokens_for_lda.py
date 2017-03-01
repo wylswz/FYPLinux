@@ -30,6 +30,9 @@ def get_corpus(i,dirc):
          return text
 en_stop = get_stop_words('en')
 
+
+
+
 tokens = []
 num_doc=args.docnum
 for j in range(1,num_doc+1):
@@ -45,7 +48,29 @@ for j in range(1,num_doc+1):
             pass
     tokens.append(stemed_tokens)
 
-dictionary = corpora.Dictionary(tokens)
+
+
+
+
+
+with open('keys','r') as shakes:
+         temp_text = shakes.read()
+         keys = nltk.word_tokenize(temp_text)
+keys_stemed = []
+for i in keys:
+    try:
+        temp_token = str(p_stemmer.stem(i))
+        keys_stemed.append(temp_token)
+    except IndexError:
+        pass
+
+
+
+
+print [keys_stemed]
+dictionary = corpora.Dictionary([keys_stemed])
+print dictionary
+
 corpus = [dictionary.doc2bow(text) for text in tokens]
 
 with open('corpus.cp','w') as tk_writter:

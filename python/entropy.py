@@ -3,6 +3,9 @@ import math
 import string
 import argparse
 import numpy as np
+import parallelLib as par
+from multiprocessing import Queue
+import multiprocessing as mp
 from collections import Counter
 from sklearn.feature_extraction.text import CountVectorizer
 
@@ -51,11 +54,36 @@ def tf_idf(word,docidx):
         
 
 filted = []
-tokenList = []
 tokenTupleList = ()
 print('Gathering terms, please wait......')
 
-Tempcounter = 0
+
+
+def parFilter(taskList,q,id,upper):
+    print('Worker %d starting.....' %id )
+    counter = 0
+    tokenList = []
+    while counter < upper:
+      for i in taskList:
+          if counter >= upper:
+              break
+          
+          tokens = get_tokens(i+1,str(args.dir)+'/')
+          listTemp = list(enumerate(tokens))
+          for term in listTemp:
+              if counter >= upper:
+                  break
+              if term[1] not in tokenList and len(term[1])>2:
+                 
+                 entropy = tf_idf(term[1],i+1)
+                 tokenList.append(term[1])
+                 if 0.04 < entropy < 0.618 and counter < upper:
+                    counter += 1
+                    filted.append(term[1])
+
+    q.put(filted)
+'''
+
 for i in range(1,numOfTrain + 1):
     tokens = get_tokens(i,str(args.dir)+'/')
     listTemp = list(enumerate(tokens))
@@ -63,9 +91,7 @@ for i in range(1,numOfTrain + 1):
         if term[1] not in tokenList and len(term[1])>2:
            entropy = tf_idf(term[1],i)
            tokenList.append(term[1])
-           if 0.04 < entropy < 0.618 and Tempcounter < 10000:
-              Tempcounter = Tempcounter + 1
-              print Tempcounter
+           if 0.04 < entropy < 0.618:
               filted.append(term[1])
               with open('keys','a') as fKey:
                    fKey.write(str(term[1])+'\t')
@@ -74,4 +100,40 @@ print('Writing keywords to file')
 #with open('keys','w') as fKey:
  #    for i in range(1,len(filted)):
   #       fKey.write(str(filted[i])+'\t')
+
+'''
+
+if __name__=='__main__':
+    num_core = 4
+    taskList = []
+    queueList = []
+    for i in range(num_core):
+        queueList.append(Queue())
+    taskList = par.splitTask(range(4000),4)    
+    p1 = mp.Process(target = parFilter, args = (taskList[0],queueList[0],1,8000))
+    p2 = mp.Process(target = parFilter, args = (taskList[1],queueList[1],2,8000))
+    p3 = mp.Process(target = parFilter, args = (taskList[2],queueList[2],3,8000))
+    p4 = mp.Process(target = parFilter, args = (taskList[3],queueList[3],4,8000))
+    p1.start()
+    p2.start()
+    p3.start()
+    p4.start()
+    s1 = set(queueList[0].get())
+    s2 = set(queueList[1].get())
+    s3 = set(queueList[2].get())
+    s4 = set(queueList[3].get())
+    keySet = s1|s2|s3|s4
+    print len(s1)
+    print len(s2)
+    print len(keySet)
+    with open('keys','w') as keyWritter:
+        for i in keySet:
+            keyWritter.write(str(i)+'\t')
+
+
+
+
+
+
+
 

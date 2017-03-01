@@ -35,25 +35,27 @@ def get_tokens_by_dir(dir):
 
 def plotCloud():
     while True:
+      
       try:
           ipt = raw_input('Topic:')
       except ImportError:
           print 'invalid type'
       else:
+          if ipt == 'exit()':
+             break
           cloud_word_tuple = LDA.get_topic_terms(ipt,topn=50)
           cloud_word = [str(dictionary[i[0]])+' ' for i in cloud_word_tuple]
           wd={}
           for i in cloud_word_tuple:
               wd[str(dictionary[i[0]])] = i[1] 
-          huaji = imread('250px.jpg')
-          wc = WordCloud()
+          huaji = imread('250px.png')
+          wc = WordCloud(width=1920, height=1080)
           wc.generate_from_frequencies(wd.items())  
           plt.figure()
           plt.imshow(wc)
           plt.axis('off')
           plt.show()
-      if ipt == 'exit()':
-          break
+      
 
 def plotTopic():
     num_words=10
@@ -142,9 +144,10 @@ def startQuery():
            lshf = LSHForest(random_state=42)
            lshf.fit(DOC_TOPICS) ##fit the local sensitive hash forest with training data POINT_SET
            dist,indices=lshf.kneighbors(QUERY_TOPIC,n_neighbors=20)
-           print indices
+           print indices+1
 
-def TopicLine(task_list,q):
+def TopicLine(task_list,q,id):
+    print('Worker %d starting.....' %id)
     submatrix = np.zeros([len(task_list),num_topic])
     for i in range(len(task_list)):
        # print task_list[i]
@@ -153,6 +156,7 @@ def TopicLine(task_list,q):
     q.put(submatrix)
 
 def parTopic():
+    
     task_list = []
     queue_list = []
     for i in range(4):
@@ -165,10 +169,10 @@ def parTopic():
 
     
     process_list = []
-    p1 = mp.Process(target = TopicLine,args = (task_list[0],queue_list[0]))
-    p2 = mp.Process(target = TopicLine,args = (task_list[1],queue_list[1]))
-    p3 = mp.Process(target = TopicLine,args = (task_list[2],queue_list[2]))
-    p4 = mp.Process(target = TopicLine,args = (task_list[3],queue_list[3]))
+    p1 = mp.Process(target = TopicLine,args = (task_list[0],queue_list[0],1))
+    p2 = mp.Process(target = TopicLine,args = (task_list[1],queue_list[1],2))
+    p3 = mp.Process(target = TopicLine,args = (task_list[2],queue_list[2],3))
+    p4 = mp.Process(target = TopicLine,args = (task_list[3],queue_list[3],4))
     p1.start()
     p2.start()
     p3.start()

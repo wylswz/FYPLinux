@@ -14,13 +14,15 @@ from sklearn.neighbors import LSHForest
 
 
 
-def save_model(doc_topic,topic_word,assigned_corpus,dir):
+def save_model(doc_topic,topic_word,assigned_corpus,ll,dir):
     with open(dir + '/Gibbs_doc_topic.init','w') as writer:
         pickle.dump(doc_topic,writer)
     with open(dir + '/Gibbs_topic_word.init','w') as writer:
         pickle.dump(topic_word,writer)
     with open(dir + '/Gibbs_corpus.init','w') as writer:
         pickle.dump(assigned_corpus,writer)
+    with open(dir + '/Gibbs_ll.init','w') as writer:
+        pickle.dump(ll,writer)
 
 def read_model(dir):
     with open(dir + '/Gibbs_doc_topic.init','r') as writer:
@@ -31,8 +33,10 @@ def read_model(dir):
 
     with open(dir + '/Gibbs_corpus.init','r') as writer:
         corpus = pickle.load(writer)
+    with open(dir + '/Gibbs_ll.init','r') as writer:
+        ll = pickle.load(writer)
     
-    return doc_topic,topic_word,corpus
+    return doc_topic,topic_word,corpus,ll
 
 
 
@@ -72,30 +76,7 @@ def init(num_doc,num_word,num_topic,corpus): ##initialize assignment
             corpus[i][j] = corpus[i][j] + (temp_topic,)
             doc_topic[i,temp_topic] += 1
             topic_word[temp_topic,corpus[i][j][0]] += 1
-    
-    '''
-    for i in range(num_doc):
-        
-        for j in range(num_topic):
-            doc_topic[i,j] = sum([x[2]==j for x in corpus[i]])
 
-
-    taskList = par.splitTask(range(num_topic),4)
-    p1 = mp.Process(target = par_count_word,args = (taskList[0],corpus,num_word,queueList[0],1))
-    p2 = mp.Process(target = par_count_word,args = (taskList[1],corpus,num_word,queueList[1],2))
-    p3 = mp.Process(target = par_count_word,args = (taskList[2],corpus,num_word,queueList[2],3))
-    p4 = mp.Process(target = par_count_word,args = (taskList[3],corpus,num_word,queueList[3],4))
-    p1.start()
-    p2.start()
-    p3.start()
-    p4.start() 
-    m_init1 = queueList[0].get()
-    m_init2 = queueList[1].get()
-    m_init3 = queueList[2].get()
-    m_init4 = queueList[3].get()  
-    topic_word = np.concatenate((m_init1,m_init2,m_init3,m_init4))    
-    
-    '''   
 
     return corpus,doc_topic,topic_word
 
@@ -105,14 +86,15 @@ def init(num_doc,num_word,num_topic,corpus): ##initialize assignment
 
 
 def gibbs_sampling(num_topic,alpha,beta,corpus,dictionary,epoches,init_dir=None):
-
+    topic_list = np.arange(num_topic)
+    probability = np.zeros(num_topic)
     num_doc = len(corpus)
     num_word = len(dictionary)
     print num_word
 
     if init_dir == None:
        assigned_corpus, doc_topic, topic_word = init(num_doc,num_word,num_topic,corpus)
-       save_model(doc_topic,topic_word,assigned_corpus,'GibbsInit')
+       save_model(doc_topic,topic_word,assigned_corpus,[],'GibbsInit')
     else:
        doc_topic,topic_word,assigned_corpus = read_model(init_dir)
 
@@ -121,66 +103,72 @@ def gibbs_sampling(num_topic,alpha,beta,corpus,dictionary,epoches,init_dir=None)
    # assigned_corpus, doc_topic, topic_word = init(num_doc,num_word,num_topic,corpus)
    # save_model(doc_topic,topic_word,assigned_corpus,'GibbsInit')
 
-
+    sum_doc_topic = np.sum(doc_topic,axis=1)
+    sum_topic_word = np.sum(topic_word,axis=1)
     ll_list = np.array([])
     key_words = []
-    for epoch in range(epoches):
-        a_1 = []
-        print('iteration %d' %epoch)
 
+    for epoch in range(epoches):
+        a_1 = []  ##top list
+        
+        ll=0
+        print('iteration %d' %epoch)
+        
+        
         for i in range(len(assigned_corpus)):
+            #print i
+            doc_id = i
+
+            
+
             for j in range(len(assigned_corpus[i])):
                 ##index assignment
-                doc_id = i
+                
                 word_id = assigned_corpus[i][j][0]
                 topic_id = assigned_corpus[i][j][2]
             ## desampling
 
                 topic_word[topic_id,word_id] -= 1
+                sum_topic_word[topic_id] -= 1
                 doc_topic[doc_id,topic_id] -= 1
-                probability = np.zeros(num_topic)
+                
+                
                 ##resampling
-                doc_likes_topic = (doc_topic[doc_id,:] + alpha)/(np.sum(doc_topic,axis=1)[doc_id] + num_topic*alpha)
-                topic_likes_word = (topic_word[:,word_id] + beta)/(np.sum(topic_word,axis=1) + num_word*beta)
+                doc_likes_topic = (doc_topic[doc_id,:] + alpha)/(sum_doc_topic[doc_id] + num_topic*alpha)
+                topic_likes_word = (topic_word[:,word_id] + beta)/(sum_topic_word + num_word*beta)
                 probability = doc_likes_topic*np.transpose(topic_likes_word)
-                probability = probability*(1/np.sum(probability))
-
+                probability = probability/np.sum(probability)
+                
                # print probability
                 mult = np.random.multinomial(1,probability)
-                new_assignment = np.dot(np.arange(num_topic),mult)
+                new_assignment = np.dot(topic_list,mult)
+
+
                 topic_word[new_assignment,word_id] += 1
                 doc_topic[doc_id,new_assignment] += 1
+                sum_topic_word[new_assignment] += 1
+
                 tempTuple = (word_id,assigned_corpus[i][j][1],new_assignment)
                 assigned_corpus[i][j] = tempTuple
+
+                ll += np.log(probability[new_assignment])
+        ll_list = np.append(ll_list,ll)
+        
+
+
         for tempiter in range(num_topic):
 
             b_1 = np.argsort(topic_word[tempiter,:])
             a_1.append(b_1[::-1])
 
-         
-        ll=0
-        for i in range(len(assigned_corpus)):
-            for j in range(len(assigned_corpus[i])):
-                ##index assignment
-                doc_id = i
-                word_id = assigned_corpus[i][j][0]
-                topic_id = assigned_corpus[i][j][2]
-                ll_A = np.log((doc_topic[doc_id,topic_id] + alpha)/(np.sum(doc_topic,axis=1)[doc_id] + num_topic*alpha))
-                ll_B = np.log((topic_word[topic_id,word_id] + beta)/(np.sum(topic_word,axis=1)[topic_id] + num_word*beta))
-                ll += ll_A+ll_B
-        print ll
-        print a_1
 
-
-        ll_list = np.append(ll_list,ll)
         
         
-    plt.plot(np.arange(epoches),ll_list)
-    plt.show()
+    
     
     for i in a_1:
         print [dictionary[idx] for idx in i[0:14]]
-    return doc_topic,topic_word,assigned_corpus
+    return doc_topic,topic_word,assigned_corpus,ll_list
         
 def load_corpus():
     print 'Loading Corpus'
@@ -214,14 +202,17 @@ def query(new_doc,doc_topic,topic_word,dictionary,LSH):
     new_corpus=dictionary.doc2bow(tokens)
     new_corpus = to_gibbs_corpus([new_corpus])[0] ##convert 
     new_topic_vector = np.zeros(num_topic)
+    
     for t in new_corpus:
-        mult_par = topic_word[:,t[0]]
+        mult_par = topic_word[:,t[0]] + 1
         mult_par = mult_par/np.sum(mult_par)
         new_topic_vector += np.random.multinomial(t[1],mult_par)
+        #print mult_par
+        #print topic_word[:,t[0]]
+    print new_topic_vector
     new_topic_vector = new_topic_vector/np.sum(new_topic_vector)
     dist,indices=LSH.kneighbors(new_topic_vector,n_neighbors=20)
     print indices+1
-
 
 
 
@@ -256,13 +247,17 @@ if __name__=='__main__':
    en_stop = get_stop_words('en')
    dictionary,corpus1 = load_corpus()
    corpus = to_gibbs_corpus(corpus1)
-   num_topic=8
-   #doc_topic,topic_word,corpus = gibbs_sampling(num_topic,0.1,0.1,corpus,dictionary,30)#,init_dir='GibbsInit')
-   doc_topic,topic_word,corpus = read_model('GibbsModel')
-   #save_model(doc_topic,topic_word,corpus,'GibbsModel')
+   num_topic=50
+   epoches = 80
+   doc_topic,topic_word,corpus,ll_list = gibbs_sampling(num_topic,0.1,0.1,corpus,dictionary,epoches)#,init_dir='GibbsInit')
+   #doc_topic,topic_word,corpus,ll_list = read_model('GibbsModel')
+   save_model(doc_topic,topic_word,corpus,ll_list,'GibbsModel')
+   doc_topic += 1
    doc_topic = doc_topic/np.transpose([np.sum(doc_topic,axis = 1)])
-   LSH = LSHForest(random_state=42)
+   LSH = LSHForest(random_state = 2)
    LSH.fit(doc_topic)
+   plt.plot(np.arange(epoches),ll_list)
+   plt.show()
 
    while True:
          try:

@@ -58,7 +58,7 @@ def plotCloud():
       
 
 def plotTopic():
-    num_words=10
+    
     while True:
       try:
           ipt = raw_input('Topic:')
@@ -69,7 +69,7 @@ def plotTopic():
           if ipt == 'exit()':
                break
           tpc_idx=int(ipt)-1
-          if tpc_idx > num_words-1:
+          if tpc_idx > num_topic-1:
               print 'Topic index too large'
           else:
                

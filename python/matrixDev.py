@@ -60,7 +60,6 @@ def trainline(taskListTrain,q,id): ##i is the index of article
     subMatrix = np.zeros([taskSize,len(tokenList)])
     for i in range(taskSize):
         corpus = get_tokens(taskListTrain[i]+1,str(args.dirT)+'/')
-        line = np.zeros([1,len(tokenList)])
         for j in range(len(tokenList)):
             a = corpus.count(tokenList[j])
             subMatrix[i,j] = a
@@ -72,8 +71,7 @@ def testline(taskListTest,q,id): ##i is the index of article
     taskSize = len(taskListTest)
     subMatrix = np.zeros([taskSize,len(tokenList)])
     for i in range(taskSize):
-        corpus = get_tokens(taskListTest[i]+1,str(args.dir)+'/')
-        line = np.zeros([1,len(tokenList)])
+        corpus = get_tokens(taskListTest[i],str(args.dir)+'/')
         for j in range(len(tokenList)):
             a = corpus.count(tokenList[j])
             subMatrix[i,j] = a
@@ -86,7 +84,7 @@ def parMatrix():
     taskTrain = range(numOfTrain)
     taskTest = range(numOfTest)
     taskListTrain = par.splitTask(taskTrain,4)
-    taskListTest = par.splitTask(taskTest,4)
+    taskListTest = [[1,2]]
     queueList = []
     processList = []
     for i in range(numOfCore):
@@ -106,22 +104,22 @@ def parMatrix():
     m=np.concatenate((m1,m2,m3,m4))
 
     p1 = mp.Process(target = testline,args = (taskListTest[0],queueList[0],1))
-    p2 = mp.Process(target = testline,args = (taskListTest[1],queueList[1],2))
-    p3 = mp.Process(target = testline,args = (taskListTest[2],queueList[2],3))
-    p4 = mp.Process(target = testline,args = (taskListTest[3],queueList[3],4))
+    #p2 = mp.Process(target = testline,args = (taskListTest[1],queueList[1],2))
+    #p3 = mp.Process(target = testline,args = (taskListTest[2],queueList[2],3))
+    #p4 = mp.Process(target = testline,args = (taskListTest[3],queueList[3],4))
     p1.start()
-    p2.start()
-    p3.start()
-    p4.start()
+    #p2.start()
+    #p3.start()
+    #p4.start()
     n1=queueList[0].get()
-    n2=queueList[1].get()
-    n3=queueList[2].get()
-    n4=queueList[3].get()
-    n=np.concatenate((n1,n2,n3,n4))
+    #n2=queueList[1].get()
+    #n3=queueList[2].get()
+    #n4=queueList[3].get()
+    #n=np.concatenate((n1,n2,n3,n4))
 
 
 
-    return m,n
+    return m,n1
         
         
 

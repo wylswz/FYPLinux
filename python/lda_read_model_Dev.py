@@ -48,6 +48,7 @@ def plotCloud():
           wd={}
           for i in cloud_word_tuple:
               wd[str(dictionary[i[0]])] = i[1] 
+          print wd
           huaji = imread('250px.png')
           wc = WordCloud(width=1920, height=1080)
           wc.generate_from_frequencies(wd.items())  
@@ -58,7 +59,7 @@ def plotCloud():
       
 
 def plotTopic():
-    
+    num_words = len(dictionary)
     while True:
       try:
           ipt = raw_input('Topic:')

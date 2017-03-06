@@ -32,7 +32,12 @@ for i in range(1,number+1):
     listTemp = list(enumerate(tokens))
     with open(toDir + str(i),'w') as writer:
          for term in listTemp:
-             wordLemmatized = wnl.lemmatize(term[1])
-             wordStemmed = stem.stem(wordLemmatized)
+             try:
+                 wordStemmed = stem.stem(term[1])
+             except IndexError:
+                 print 'Error'
+                 print term[1]
+             else:
+                 pass
              wordStemmed = re.sub(r'[^a-zA-Z\s\n]',' ',wordStemmed)
              writer.write(str(wordStemmed).lower()+'\t')

@@ -11,6 +11,27 @@ from nltk.stem.porter import PorterStemmer
 from sklearn.feature_extraction.text import CountVectorizer
 from stop_words import get_stop_words
 from sklearn.neighbors import LSHForest
+from wordcloud import WordCloud,ImageColorGenerator,STOPWORDS
+from scipy.misc import imread
+
+def Dirichlet(sparsity,dimension):
+    index = np.arange(dimension)
+    fig,ax = plt.subplots(nrows=5,ncols=5)
+    temp_counter=0
+    for i in range(5):
+        for j in range(5):
+            temp_counter+=2
+            alpha = np.ones(dimension)*sparsity*temp_counter
+            s = np.random.dirichlet(alpha,dimension)
+            bar_plot(ax[i,j],index,s[0],bar_width,alpha)
+    plt.show()    
+    
+
+def bar_plot(ax,index,number,bar_width,alpha):
+    ax.bar(index,number,bar_width)
+    ax.set_title('alpha = %d' % int(alpha[0]),fontsize=10)
+    ax.axes.get_yaxis().set_visible(False)
+    ax.axes.get_xaxis().set_visible(False)
 
 
 
@@ -157,7 +178,6 @@ def gibbs_sampling(num_topic,alpha,beta,corpus,dictionary,epoches,init_dir=None)
 
 
         for tempiter in range(num_topic):
-
             b_1 = np.argsort(topic_word[tempiter,:])
             a_1.append(b_1[::-1])
 
@@ -240,25 +260,7 @@ def knn_search(new_topic_vector,doc_topic,LSH):
 
 
 
-
-
-
-if __name__=='__main__':
-   en_stop = get_stop_words('en')
-   dictionary,corpus1 = load_corpus()
-   corpus = to_gibbs_corpus(corpus1)
-   num_topic=50
-   epoches = 80
-   doc_topic,topic_word,corpus,ll_list = gibbs_sampling(num_topic,0.1,0.1,corpus,dictionary,epoches)#,init_dir='GibbsInit')
-   #doc_topic,topic_word,corpus,ll_list = read_model('GibbsModel')
-   save_model(doc_topic,topic_word,corpus,ll_list,'GibbsModel')
-   doc_topic += 1
-   doc_topic = doc_topic/np.transpose([np.sum(doc_topic,axis = 1)])
-   LSH = LSHForest(random_state = 2)
-   LSH.fit(doc_topic)
-   plt.plot(np.arange(epoches),ll_list)
-   plt.show()
-
+def start_query():
    while True:
          try:
              ipt = raw_input('query:')
@@ -269,6 +271,88 @@ if __name__=='__main__':
                  break
              else:
                  query(ipt,doc_topic,topic_word,dictionary,LSH)
-       
+def math_plot():
+    while True:
+        try:
+            ipt = raw_input('option: 1. Dirichlet \n ')
+        except IOError:
+            print 'invalid input'
+        else:
+            if ipt == 'exit()':
+                break
+            else:
+                if ipt == '1':
+                   Dirichlet(sparsity,dimension)
+
+def topic_vis(dictionary,topic_word):
+    while True:
+        try:
+            ipt = raw_input('Topic:')
+        except IOError:
+            print 'invalid input'
+        else:
+            if ipt == 'exit()':
+                break
+            else:
+                word_cloud(dictionary,ipt,topic_word)
+
+
+def word_cloud(dictionary,topic_index,topic_word):
+    
+    wd={}
+    b_1 = np.argsort(topic_word[ipt,:])
+    cloud_word = [str(dictionary[i])+' ' for i in b_1]
+    for j in b_1:
+        wd[str(dictionary[j])] = topic_word[topic_index,j]/np.sum(topic_word[topic_index,:])
+
+    huaji = imread('250px.png')
+    wc = WordCloud(width=1920, height=1080)
+    wc.generate_from_frequencies(wd.items())  
+    plt.figure()
+    plt.imshow(wc)
+    plt.axis('off')
+    plt.show()
+
+
+
+
+
+if __name__=='__main__':
+   bar_width = 0.1
+   sparsity = 1
+   dimension = 20
+   ##plot parameters
+   
+   en_stop = get_stop_words('en')
+   dictionary,corpus1 = load_corpus()
+   corpus = to_gibbs_corpus(corpus1)
+   num_topic=50
+   epoches = 80
+   #doc_topic,topic_word,corpus,ll_list = gibbs_sampling(num_topic,0.1,0.1,corpus,dictionary,epoches)#,init_dir='GibbsInit')
+   doc_topic,topic_word,corpus,ll_list = read_model('GibbsModel')
+   save_model(doc_topic,topic_word,corpus,ll_list,'GibbsModel')
+   doc_topic += 1
+   doc_topic = doc_topic/np.transpose([np.sum(doc_topic,axis = 1)])
+   LSH = LSHForest(random_state = 2)
+   LSH.fit(doc_topic)
+   plt.plot(np.arange(epoches),ll_list)
+   plt.show()
+
+   while True:
+         try:
+             ipt = raw_input('Option: 1.Query \n 2.Plot \n 3.Display Topics')
+         except IOError:
+             print 'invalid type'
+         else:
+             if ipt == 'exit()':
+                 break
+             else:
+                 if ipt == '1':
+                    start_query()
+                 if ipt == '2':
+                    math_plot()
+                 if ipt == '3':
+                    topic_vis(dictionary,topic_word)
+
 
 

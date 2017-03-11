@@ -1,3 +1,8 @@
+
+
+
+
+
 import numpy as np
 from gensim import corpora, models
 import pickle
@@ -13,6 +18,11 @@ from stop_words import get_stop_words
 from sklearn.neighbors import LSHForest
 from wordcloud import WordCloud,ImageColorGenerator,STOPWORDS
 from scipy.misc import imread
+import argparse
+
+parser = argparse.ArgumentParser(description="Gibbs Sampler")
+parser.add_argument('iter',help=' Number of iterations',type=int)
+args=parser.parse_args()
 
 def Dirichlet(sparsity,dimension):
     index = np.arange(dimension)
@@ -158,9 +168,13 @@ def gibbs_sampling(num_topic,alpha,beta,corpus,dictionary,epoches,init_dir=None)
                 doc_likes_topic = (doc_topic[doc_id,:] + alpha)/(sum_doc_topic[doc_id] + num_topic*alpha)
                 topic_likes_word = (topic_word[:,word_id] + beta)/(sum_topic_word + num_word*beta)
                 probability = doc_likes_topic*np.transpose(topic_likes_word)
+
+                #if num_topic>5:
+                #   print probability
                 probability = probability/np.sum(probability)
                 
-               # print probability
+                
+
                 mult = np.random.multinomial(1,probability)
                 new_assignment = np.dot(topic_list,mult)
 
@@ -172,8 +186,9 @@ def gibbs_sampling(num_topic,alpha,beta,corpus,dictionary,epoches,init_dir=None)
                 tempTuple = (word_id,assigned_corpus[i][j][1],new_assignment)
                 assigned_corpus[i][j] = tempTuple
 
-                ll += np.log(probability[new_assignment])
-        ll_list = np.append(ll_list,ll)
+                ll += -np.log(probability[new_assignment])
+        #print ll
+        ll_list = np.append(ll_list,np.exp(ll/num_word))
         
 
 
@@ -186,8 +201,8 @@ def gibbs_sampling(num_topic,alpha,beta,corpus,dictionary,epoches,init_dir=None)
         
     
     
-    for i in a_1:
-        print [dictionary[idx] for idx in i[0:14]]
+    #for i in a_1:
+        #print [dictionary[idx] for idx in i[0:14]]
     return doc_topic,topic_word,assigned_corpus,ll_list
         
 def load_corpus():
@@ -206,7 +221,7 @@ def get_tokens(dirc):
          tokens = nltk.word_tokenize(text)
          return tokens            
 
-def query(new_doc,doc_topic,topic_word,dictionary,LSH):
+def query(new_doc,doc_topic,topic_word,dictionary,LSH,num_topic):
     tokens = []
     token = get_tokens(new_doc)
     stopped_tokens = [i for i in token if not i in en_stop]
@@ -229,7 +244,7 @@ def query(new_doc,doc_topic,topic_word,dictionary,LSH):
         new_topic_vector += np.random.multinomial(t[1],mult_par)
         #print mult_par
         #print topic_word[:,t[0]]
-    print new_topic_vector
+    
     new_topic_vector = new_topic_vector/np.sum(new_topic_vector)
     dist,indices=LSH.kneighbors(new_topic_vector,n_neighbors=20)
     print indices+1
@@ -237,8 +252,81 @@ def query(new_doc,doc_topic,topic_word,dictionary,LSH):
 
 
 
+
+
+def perplexity_prob(new_doc,doc_topic,topic_word,dictionary,num_topic):
+    sum_topic_word = np.sum(topic_word,axis=1)
+    num_word = len(dictionary)
+    topic_word += 1
+    #rint topic_word
+    topic_word = (topic_word)/np.transpose([np.sum(topic_word,axis = 1)])
+    prob = 0
+    tokens = []
+    token = get_tokens(new_doc)
+    stopped_tokens = [i for i in token if not i in en_stop]
+    p_stemmer = PorterStemmer()
+    stemed_tokens = []
+    for i in stopped_tokens:
+        try:
+            temp_token = str(p_stemmer.stem(i))
+            stemed_tokens.append(temp_token)
+        except IndexError:
+            pass
+    tokens = stemed_tokens
+    new_corpus=dictionary.doc2bow(tokens)
+    new_corpus = to_gibbs_corpus([new_corpus])[0] ##convert 
+    new_topic_vector = np.zeros(num_topic)
+    
+    for t in new_corpus:
+        mult_par = topic_word[:,t[0]] + 1
+        mult_par = mult_par/np.sum(mult_par)
+        new_topic_vector += np.random.multinomial(t[1],mult_par)
+        #print mult_par
+        #print topic_word[:,t[0]]
+
+    new_topic_vector = (new_topic_vector+alpha)/(np.sum(new_topic_vector)+alpha*num_topic)
+    
+    for w in new_corpus:
+        #print topic_word[:,w[0]]   ,new_topic_vector
+        prob += np.dot(topic_word[:,w[0]]   ,new_topic_vector)*np.log(   np.dot(topic_word[:,w[0]]   ,new_topic_vector))
+        
+    return prob,len(new_corpus)
+
+
+
+
+
+def perplexity(doc_topic,topic_word,dictionary,num_topic):
+    testList = range(4100,4120)
+    nameList = []
+    for i in testList:
+        tempName = 'wiki/'+ str(i)
+        nameList.append(tempName)
+
+    prob_list = np.array([])
+    N_list = np.array([])
+
+    for new in nameList:
+        prob,N = perplexity_prob(new,doc_topic,topic_word,dictionary,num_topic)
+        prob_list = np.append(prob_list,prob)
+        N_list = np.append(N_list,N)
+    #print -np.sum(prob_list)
+    #print np.sum(N_list)
+    perplexity = np.exp(-np.sum(prob_list)/np.sum(N_list))
+    return perplexity
+
+    
+
+        
+
+
+
+
+
+
+
 def to_gibbs_corpus(corpus1):
-    print 'Converting corpus to Gibbs sampling format'
+    #print 'Converting corpus to Gibbs sampling format'
     corpus = []
     p=0
     for i in corpus1:
@@ -251,7 +339,21 @@ def to_gibbs_corpus(corpus1):
 
     return corpus
 
+def word_cloud(dictionary,topic_index,topic_word):
+    
+    wd={}
+    b_1 = np.argsort(topic_word[ipt,:])[::-1]
+    cloud_word = [str(dictionary[i])+' ' for i in b_1]
+    for j in b_1:
+        wd[str(dictionary[j])] = topic_word[topic_index,j]/np.sum(topic_word[topic_index,:])
 
+    huaji = imread('250px.png')
+    wc = WordCloud(width=1920, height=1080,background_color="white")
+    wc.generate_from_frequencies(wd.items())  
+    plt.figure()
+    plt.imshow(wc)
+    plt.axis('off')
+    plt.show()
 
 
 def knn_search(new_topic_vector,doc_topic,LSH):
@@ -260,7 +362,7 @@ def knn_search(new_topic_vector,doc_topic,LSH):
 
 
 
-def start_query():
+def start_query(num_topic):
    while True:
          try:
              ipt = raw_input('query:')
@@ -270,7 +372,7 @@ def start_query():
              if ipt == 'exit()':
                  break
              else:
-                 query(ipt,doc_topic,topic_word,dictionary,LSH)
+                 query(ipt,doc_topic,topic_word,dictionary,LSH,num_topic)
 def math_plot():
     while True:
         try:
@@ -296,22 +398,56 @@ def topic_vis(dictionary,topic_word):
             else:
                 word_cloud(dictionary,ipt,topic_word)
 
-
-def word_cloud(dictionary,topic_index,topic_word):
+def term_distribution(topic_word):
+    nw=30
+    index = np.arange(nw)
+    topic_word = topic_word/np.transpose([np.sum(topic_word,axis = 0)])
     
-    wd={}
-    b_1 = np.argsort(topic_word[ipt,:])
-    cloud_word = [str(dictionary[i])+' ' for i in b_1]
-    for j in b_1:
-        wd[str(dictionary[j])] = topic_word[topic_index,j]/np.sum(topic_word[topic_index,:])
+    while True:
+        try:
+            ipt = raw_input('Topic')
+        except IOError:
+            print 'invalid input'
+        else:
+            if ipt == 'exit()':
+                break
+            else:
+                b_1 = np.sort(topic_word[ipt,:])[::-1]
+                indices = np.argsort(topic_word[ipt,:])[::-1]
+                bars = plt.bar(index,b_1[0:nw],bar_width)
+                counter = 0
+                for bar in bars:
+                    height = bar.get_height()
+                   #plt.text(bar.get_x() + bar.get_width()/2., 1.02*height,str(dictionary[indices[counter]]),ha='center', va='bottom')
+                    counter += 1
+                plt.xlabel('Words')
+                plt.ylabel('Probability in topic')
+                plt.show()
 
-    huaji = imread('250px.png')
-    wc = WordCloud(width=1920, height=1080)
-    wc.generate_from_frequencies(wd.items())  
-    plt.figure()
-    plt.imshow(wc)
-    plt.axis('off')
-    plt.show()
+def topic_distribution(doc_topic):
+    nw=30
+    index = np.arange(nw)
+    doc_topic = doc_topic/np.transpose([np.sum(doc_topic,axis = 1)])
+    
+    while True:
+        try:
+            ipt = raw_input('Topic')
+        except IOError:
+            print 'invalid input'
+        else:
+            if ipt == 'exit()':
+                break
+            else:
+                b_1 = np.sort(doc_topic[ipt,:])[::-1]
+                indices = np.argsort(doc_topic[ipt,:])[::-1]
+                bars = plt.bar(index,b_1[0:nw],bar_width)
+                counter = 0
+                plt.xlabel('Topic')
+                plt.ylabel('Probability in document')
+                plt.show()
+
+
+
 
 
 
@@ -322,25 +458,58 @@ if __name__=='__main__':
    sparsity = 1
    dimension = 20
    ##plot parameters
-   
+   alpha = 0.1
+   beta = 0.1
    en_stop = get_stop_words('en')
    dictionary,corpus1 = load_corpus()
    corpus = to_gibbs_corpus(corpus1)
+   #num_topic_list = np.array([2,3,20,30,50,80,100,150,200])
+   list1 = [5,10,15,20,35,40,45,50]
    num_topic=50
-   epoches = 80
-   #doc_topic,topic_word,corpus,ll_list = gibbs_sampling(num_topic,0.1,0.1,corpus,dictionary,epoches)#,init_dir='GibbsInit')
-   doc_topic,topic_word,corpus,ll_list = read_model('GibbsModel')
-   save_model(doc_topic,topic_word,corpus,ll_list,'GibbsModel')
+   epoches = args.iter
+   '''
+   if epoches > 0:
+      doc_topic,topic_word,corpus,ll_list = gibbs_sampling(num_topic,alpha,beta,corpus,dictionary,epoches)#,init_dir='GibbsInit')
+      save_model(doc_topic,topic_word,corpus,ll_list,'GibbsModelCache')
+   else:
+      doc_topic,topic_word,corpus,ll_list = read_model('GibbsModel4000')
+   '''
+   perp_list = np.array([])
+   for epoch in list1:
+       corpus = to_gibbs_corpus(corpus1)
+       doc_topic,topic_word,corpus,ll_list = gibbs_sampling(num_topic,alpha,beta,corpus,dictionary,epoch)#,init_dir='GibbsInit')
+       a = perplexity(doc_topic,topic_word,dictionary,num_topic)
+       #print a
+       perp_list = np.append(perp_list, a)
+       #print perp_list
+       
+       #plt.plot(np.arange(len(ll_list)),ll_list,label='number of topic: %d' %num_topic)
+   plt.plot(list1,perp_list,'bo-')
+   
+
+   ##only for plot
+   
+   #alpha_list = [0.001,0.01,0.1,1,10,100]
+   #for i in alpha_list:
+   #    corpus = to_gibbs_corpus(corpus1)
+   #    doc_topic,topic_word,corpus,ll_list = gibbs_sampling(num_topic,i,0.1,corpus,dictionary,epoches)#,init_dir='GibbsInit')
+   #    plt.plot(np.arange(epoches),ll_list,label='aplha = %d' %i)
+       
+
+   
    doc_topic += 1
    doc_topic = doc_topic/np.transpose([np.sum(doc_topic,axis = 1)])
    LSH = LSHForest(random_state = 2)
    LSH.fit(doc_topic)
-   plt.plot(np.arange(epoches),ll_list)
+   #plt.plot(np.arange(len(ll_list)),ll_list)
+   plt.legend(loc=4)
+   plt.xlabel('Number of Topics')
+   plt.ylabel('Perplexity')
    plt.show()
 
    while True:
          try:
-             ipt = raw_input('Option: 1.Query \n 2.Plot \n 3.Display Topics')
+             ipt = raw_input('Option: 1.Query \n 2.Plot \n 3.Display Topics \n 4. Term Distribution\n 5. Topic Distribution\n 6. Perplexity :')
          except IOError:
              print 'invalid type'
          else:
@@ -348,11 +517,18 @@ if __name__=='__main__':
                  break
              else:
                  if ipt == '1':
-                    start_query()
+                    start_query(num_topic)
                  if ipt == '2':
                     math_plot()
                  if ipt == '3':
                     topic_vis(dictionary,topic_word)
+                 if ipt == '4':
+                    term_distribution(topic_word)
+                 if ipt == '5':
+                    topic_distribution(doc_topic)
+                 else:
+                    pass
+                    
 
 
 
